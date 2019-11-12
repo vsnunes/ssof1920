@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 import sys, json
+from AST.variable import Variable
+from AST.expression import Expression
+from AST.binop import BinaryOperation
 
 def main(argv, arg):
 
@@ -28,10 +31,26 @@ def createNodes(parsed_json):
         #return Assign(a, b)
     elif(nodeType == "If"):
         print("\t" + nodeType)
+        
     elif(nodeType == "Expr"):
         print("\t" + nodeType)
+
     elif(nodeType == "Call"):
         print("\t" + nodeType)
+
+    elif(nodeType == "Name"):
+        return Variable(parsed_json['id'])
+
+    elif(nodeType == "Num")
+        return createNodes(parsed_json['n'])
+
+    elif(nodeType == "Str")
+        return Expression(parsed_json['s'])
+
+    elif(nodeType == "BinOp")
+        left = createNodes(parsed_json['left'])
+        right = createNodes(parsed_json['right'])
+        return BinaryOperation(left, right)
 
 
 if __name__== "__main__":
