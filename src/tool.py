@@ -6,9 +6,13 @@ from AST.variable import Variable
 from AST.expression import Expression
 from AST.binop import BinaryOperation
 from AST.ifelse import If
+from AST.symtable import SymTable
 
 
 from AST.visitors.debugger import Debugger
+
+# Symtable for storing recurrent variables
+symtable = SymTable()
 
 def main(argv, arg):
 
@@ -49,6 +53,8 @@ def createNodes(parsed_json):
         elif(nodeType == "Assign"):
             targets = createNodes(parsed_json['targets'][0])
             value = createNodes(parsed_json['value'])
+            
+            targets.tainted = value.tainted
             return Assign(targets, value)
 
         elif(nodeType == "If"):
@@ -58,10 +64,9 @@ def createNodes(parsed_json):
             return If(condition, body, orelse)
                 
         elif(nodeType == "Expr"):
-            return Expression(False)
+            return Expression(createNodes(parsed_json['value']))
 
         elif(nodeType == "Compare"):
-            # a == 2
             comparators = createNodes(parsed_json['comparators'])
             variable = createNodes(parsed_json['left'])
 
@@ -72,22 +77,30 @@ def createNodes(parsed_json):
                     break
                     
             # if the variable is tainted or the expression then the result is tainted
-            return Expression(isTainted or variable.tainted)
+            return Expression(None, isTainted or variable.tainted)
 
         elif(nodeType == "Call"):
             print("\t" + nodeType)
 
         elif(nodeType == "Name"):
-            return Variable(parsed_json['id'])
+            variable = symtable.contains(parsed_json['id'])
+
+            if variable is not None:
+                return variable
+
+            variable = Variable(parsed_json['id'])
+            symtable.addEntry(variable)
+
+            return variable
 
         elif(nodeType == "Num"):
             return createNodes(parsed_json['n'])
 
         elif(nodeType == "Str"):
-            return Expression(False)
+            return Expression(None, False)
 
         elif(nodeType == "int"):
-            return Expression(False)
+            return Expression(None, False)
 
         elif(nodeType == "BinOp"):
             left = createNodes(parsed_json['left'])

@@ -5,7 +5,7 @@ class Variable(Instruction):
     def __init__(self, id):
         # variable identifier
         self.id = id
-        self.tainted = False
+        self.tainted = True
 
     def accept(self, visitor):
         visitor.visit_variable(self)

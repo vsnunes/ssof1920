@@ -48,7 +48,7 @@ class Debugger(Visitor):
 
 
     def visit_variable(self, variable):
-        self.display("*Variable Id = " + variable.id)
+        self.display("*Variable Id = " + variable.id + " Tainted? = " + str(variable.tainted))
 
 
     def visit_expr(self, expr):
@@ -56,6 +56,8 @@ class Debugger(Visitor):
 
 
     def visit_binop(self, binop):
-        self.display("*BinOp")
+        self.display("*BinOp Tainted? = " + str(binop.tainted))
+        self.innerScope()
         binop.left.accept(self)
         binop.right.accept(self)
+        self.outerScope()
