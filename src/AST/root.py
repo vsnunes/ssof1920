@@ -1,10 +1,10 @@
-class Block:
+class Root:
     def __init__(self, instructions):
         self.instructions = instructions
 
     def traverse(self, visitor):
         """
-        Traverses the block instruction by instruction
+        Traverses the root instruction by instruction
         applying the visitor.
 
         Parameters:
