@@ -4,6 +4,20 @@ Software Security project
 ## Useful Links
 [Project Description](https://fenix.tecnico.ulisboa.pt/disciplinas/SSof7/2019-2020/1-semestre/project)
 
+## How to run the tool
+The tool receives the code slice and the vulnerability pattern file both in JSON format.
+
+To run the tool simply invoke the following commands:
+```
+cd src/
+./tool codeSlice.json vulnerabilityPattern.json
+```
+
+**Note:** If you get a "permission denied" during the execution of the previous command you will have to add exec permissions:
+```
+chmod +x tool
+```
+
 ## Problem
 A large class of vulnerabilities in applications originates in programs that enable user input information to affect the values of certain parameters of security sensitive functions. In other words, these programs encode an illegal information flow, in the sense that low integrity -- tainted -- information (user input) may interfere with high integrity parameters of sensitive functions (so called sensitive sinks). This means that users are given the power to alter the behavior of sensitive functions, and in the worst case may be able to induce the program to perform security violations.
 

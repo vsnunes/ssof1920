@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 import sys, json
+from AST.block import Block
+from AST.assign import Assign
 from AST.variable import Variable
 from AST.expression import Expression
 from AST.binop import BinaryOperation
+
+from AST.visitors.debuger import Debugger
 
 def main(argv, arg):
 
@@ -14,26 +18,31 @@ def main(argv, arg):
         json_code = myfile.read()
 
     parsed_json = json.loads(json_code)
-    print(parsed_json)
-    createNodes(parsed_json) 
+    
+    program_block = createNodes(parsed_json)
+    debugger = Debugger()
+    program_block.traverse(debugger)
   
 def createNodes(parsed_json):
     nodeType = parsed_json['ast_type']
 
     if (nodeType == "Module"):
+        instructions = []
         for instruction in parsed_json['body']:
-            createNodes(instruction)
+            instructions.append(createNodes(instruction))
+        return Block(instructions)
+
     elif(nodeType == "Assign"):
-        print("\t" + nodeType)
-        print(parsed_json)
-        a = createNodes(parsed_json['targets'][0])
-        b = createNodes(parsed_json['value'])
-        #return Assign(a, b)
+        targets = createNodes(parsed_json['targets'][0])
+        value = createNodes(parsed_json['value'])
+        return Assign(targets, value)
+
     elif(nodeType == "If"):
         print("\t" + nodeType)
         
     elif(nodeType == "Expr"):
-        print("\t" + nodeType)
+        value = createNodes(parsed_json['value'])
+        return Expression(value)
 
     elif(nodeType == "Call"):
         print("\t" + nodeType)
@@ -41,13 +50,16 @@ def createNodes(parsed_json):
     elif(nodeType == "Name"):
         return Variable(parsed_json['id'])
 
-    elif(nodeType == "Num")
+    elif(nodeType == "Num"):
         return createNodes(parsed_json['n'])
 
-    elif(nodeType == "Str")
+    elif(nodeType == "Str"):
         return Expression(parsed_json['s'])
 
-    elif(nodeType == "BinOp")
+    elif(nodeType == "int"):
+        return Expression(parsed_json['n'])
+
+    elif(nodeType == "BinOp"):
         left = createNodes(parsed_json['left'])
         right = createNodes(parsed_json['right'])
         return BinaryOperation(left, right)

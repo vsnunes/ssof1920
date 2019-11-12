@@ -1,6 +1,6 @@
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 
-class Instruction(metaclass=abc.ABCMeta):
+class Instruction(metaclass=ABCMeta):
     def __init__(self):
         pass
 
