@@ -3,4 +3,4 @@ while a == 2:
         a = 2
     c = b * a
     b = 1
-    c = b * a
+    c = c * a

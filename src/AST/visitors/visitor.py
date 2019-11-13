@@ -29,3 +29,7 @@ class Visitor(metaclass=ABCMeta):
     @abstractmethod
     def visit_binop(self, binop):
         pass
+
+    @abstractmethod
+    def visit_function_call(self, function_call):
+        pass

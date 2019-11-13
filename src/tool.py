@@ -58,7 +58,7 @@ def createNodes(parsed_json):
             
             targets.tainted = value.tainted
 
-            #symtable.reWrite(targets.id, targets.tainted)
+            symtable.reWrite(targets.id, targets.tainted)
 
             return Assign(targets, value)
 
@@ -89,7 +89,11 @@ def createNodes(parsed_json):
 
         elif(nodeType == "Name"):
             variable = Variable(parsed_json['id'])
-            #variable.tainted = symtable.giveMeLast(parsed_json['id']).tainted
+            tainted_last = symtable.giveMeLast(parsed_json['id'])
+
+            if tainted_last is not None:
+                variable.tainted = tainted_last
+
             symtable.addEntry(variable)
 
             return variable

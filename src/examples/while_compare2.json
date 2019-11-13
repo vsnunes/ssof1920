@@ -160,7 +160,7 @@
                             "ctx": {
                                 "ast_type": "Load"
                             },
-                            "id": "b",
+                            "id": "c",
                             "lineno": 6
                         },
                         "lineno": 6,

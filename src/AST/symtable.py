@@ -1,7 +1,6 @@
 class SymTable:
     def __init__(self):
         self.variables = []
-        self.pointer = 0
 
     def addEntry(self, variable):
         self.variables.append(variable)
@@ -11,8 +10,17 @@ class SymTable:
         self.variables = self.variables[1:]
         return variable
 
-        #for i in range(self.pointer, -1, -1):
-        #    if variable.id == variable_id:
-        #        return variable.tainted
+    def giveMeLast(self,variable_id):
+        for i in range(len(self.variables)-1, -1, -1):
+            if self.variables[i].id == variable_id:
+                return self.variables[i].tainted
+        return None
+
+    def reWrite(self, variable_id, tainted):
+        for i in range(len(self.variables)-1, -1, -1):
+            if self.variables[i].id == variable_id:
+                self.variables[i].tainted = tainted
+                break
+
 
     #something missing for checkings sinks
