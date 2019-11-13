@@ -1,0 +1,51 @@
+{
+    "ast_type": "Module",
+    "body": [
+        {
+            "ast_type": "While",
+            "body": [
+                {
+                    "ast_type": "Pass",
+                    "col_offset": 4,
+                    "lineno": 2
+                }
+            ],
+            "col_offset": 0,
+            "lineno": 1,
+            "orelse": [
+                {
+                    "ast_type": "Assign",
+                    "col_offset": 4,
+                    "lineno": 4,
+                    "targets": [
+                        {
+                            "ast_type": "Name",
+                            "col_offset": 4,
+                            "ctx": {
+                                "ast_type": "Store"
+                            },
+                            "id": "a",
+                            "lineno": 4
+                        }
+                    ],
+                    "value": {
+                        "ast_type": "Num",
+                        "col_offset": 8,
+                        "lineno": 4,
+                        "n": {
+                            "ast_type": "int",
+                            "n": 2,
+                            "n_str": "2"
+                        }
+                    }
+                }
+            ],
+            "test": {
+                "ast_type": "NameConstant",
+                "col_offset": 6,
+                "lineno": 1,
+                "value": "True"
+            }
+        }
+    ]
+}

@@ -6,7 +6,9 @@ from AST.variable import Variable
 from AST.expression import Expression
 from AST.binop import BinaryOperation
 from AST.ifelse import If
+from AST.whileelse import While
 from AST.symtable import SymTable
+
 
 
 from AST.visitors.debugger import Debugger
@@ -55,6 +57,9 @@ def createNodes(parsed_json):
             value = createNodes(parsed_json['value'])
             
             targets.tainted = value.tainted
+
+            #symtable.reWrite(targets.id, targets.tainted)
+
             return Assign(targets, value)
 
         elif(nodeType == "If"):
@@ -83,12 +88,8 @@ def createNodes(parsed_json):
             print("\t" + nodeType)
 
         elif(nodeType == "Name"):
-            variable = symtable.contains(parsed_json['id'])
-
-            if variable is not None:
-                return variable
-
             variable = Variable(parsed_json['id'])
+            #variable.tainted = symtable.giveMeLast(parsed_json['id']).tainted
             symtable.addEntry(variable)
 
             return variable
@@ -106,6 +107,16 @@ def createNodes(parsed_json):
             left = createNodes(parsed_json['left'])
             right = createNodes(parsed_json['right'])
             return BinaryOperation(left, right)
+
+        elif(nodeType == "While"):
+            condition = createNodes(parsed_json['test'])
+            body = createNodes(parsed_json['body'])
+            
+            orelse = createNodes(parsed_json['orelse'])
+            return While(condition, body, orelse)
+
+        elif(nodeType == "NameConstant"):
+            return Expression(None, False)
 
         else: #discard this instruction
             return None

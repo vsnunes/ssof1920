@@ -7,5 +7,11 @@ class Variable(Instruction):
         self.id = id
         self.tainted = True
 
+    def __eq__(self, other):
+        if self.__class__ == other.__class__:
+            return self.id == other.id
+        
+        return False
+
     def accept(self, visitor):
         visitor.visit_variable(self)

@@ -21,11 +21,14 @@ class Debugger(Visitor):
     def visit_if(self, if_inst):
         self.display("*If")
         self.innerScope()
+        self.display("Condition")
+        self.innerScope()
         if_inst.condition.accept(self)
-        if if_inst.body is not None:
-            for instruction in if_inst.body:
-                instruction.accept(self)
-        if if_inst.orelse is not None:
+        self.outerScope()
+        self.display("Body")
+        for instruction in if_inst.body:
+            instruction.accept(self)
+        if len(if_inst.orelse) > 0:
             self.display("Else")
             for instruction in if_inst.orelse:
                 instruction.accept(self)
@@ -40,7 +43,25 @@ class Debugger(Visitor):
 
 
     def visit_while(self, while_inst):
-        pass
+        self.display("*While")
+        self.innerScope()
+        self.display("Condition")
+        self.innerScope()
+        while_inst.condition.accept(self)
+        self.outerScope()
+        self.display("Body")
+        self.innerScope()
+        for instruction in while_inst.body:
+            instruction.accept(self)
+        self.outerScope()
+        if len(while_inst.orelse) > 0:
+            self.display("Else")
+            self.innerScope()
+            for instruction in while_inst.orelse:
+                instruction.accept(self)
+            self.outerScope()
+        self.outerScope()
+
 
 
     def visit_function_call(self, function_call):
