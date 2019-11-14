@@ -30,6 +30,7 @@ def main(argv, arg):
     program_block = createNodes(parsed_json)
     debugger = Debugger()
     program_block.traverse(debugger)
+    symtable.resetPointer()
   
 def createNodes(parsed_json):
     #case where you have a list of instructions
