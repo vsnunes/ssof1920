@@ -8,7 +8,7 @@ from AST.binop import BinaryOperation
 from AST.ifelse import If
 from AST.whileelse import While
 from AST.symtable import SymTable
-
+from AST.functioncall import FunctionCall
 
 
 from AST.visitors.debugger import Debugger
@@ -85,9 +85,6 @@ def createNodes(parsed_json):
             # if the variable is tainted or the expression then the result is tainted
             return Expression(None, isTainted or variable.tainted)
 
-        elif(nodeType == "Call"):
-            print("\t" + nodeType)
-
         elif(nodeType == "Name"):
             variable = Variable(parsed_json['id'])
             tainted_last = symtable.giveMeLast(parsed_json['id'])
@@ -122,6 +119,11 @@ def createNodes(parsed_json):
 
         elif(nodeType == "NameConstant"):
             return Expression(None, False)
+
+        elif(nodeType == "Call"):
+            args = createNodes(parsed_json['args'])
+            name = parsed_json['func']['id']
+            return FunctionCall(name, args)
 
         else: #discard this instruction
             return None

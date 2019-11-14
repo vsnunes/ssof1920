@@ -65,16 +65,26 @@ class Debugger(Visitor):
 
 
     def visit_function_call(self, function_call):
-        pass
-
-
+        self.display("*FunctionCall name = " + function_call.name + " Tainted? = " + str(function_call.tainted))
+        self.innerScope()
+        self.display("Args")
+        for arg in function_call.args:
+            arg.accept(self)
+        self.outerScope()
+        
     def visit_variable(self, variable):
         self.display("*Variable Id = " + variable.id + " Tainted? = " + str(variable.tainted))
 
 
     def visit_expr(self, expr):
         self.display("*Expr Tainted? = " + str(expr.tainted))
-
+        if expr.child is not None:
+            self.innerScope()
+            self.display("Child")
+            self.innerScope()
+            expr.child.accept(self)
+            self.outerScope()
+            self.outerScope()
 
     def visit_binop(self, binop):
         self.display("*BinOp Tainted? = " + str(binop.tainted))
