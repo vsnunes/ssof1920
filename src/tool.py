@@ -9,6 +9,8 @@ from AST.ifelse import If
 from AST.whileelse import While
 from AST.symtable import SymTable
 from AST.functioncall import FunctionCall
+from AST.attribute import Attribute
+from vuln.vulnerability import Vulnerability
 
 
 from AST.visitors.debugger import Debugger
@@ -22,8 +24,30 @@ def main(argv, arg):
         print("Usage: ./tool.py codeSlice.json vulnerabilityPattern.json")
         sys.exit(1)
 
-    with open(argv[1], 'r') as myfile:
-        json_code = myfile.read()
+    try:
+        with open(argv[1], 'r') as myfile:
+            json_code = myfile.read()
+    except FileNotFoundError:
+        print("Wrong codeSlice file or path")
+        sys.exit(1)
+
+    try:
+        with open(argv[2], 'r') as myfile:
+            json_vulnPatterns = myfile.read()
+    except FileNotFoundError:
+        print("Wrong vulnerabilityPattern file or path")
+        sys.exit(1)
+
+    parsed_vulnerabilities = json.loads(json_vulnPatterns)
+
+    vuln_list = []
+    for vuln in parsed_vulnerabilities:
+        if not isInVuln(vuln_list, vuln):
+            vuln_list.append(Vulnerability(vuln["vulnerability"], vuln["sources"], vuln["sanitizers"], vuln["sinks"]))
+    
+    #for vuln in vuln_list:
+        #print(vuln)        
+    
 
     parsed_json = json.loads(json_code)
     
@@ -31,7 +55,7 @@ def main(argv, arg):
     debugger = Debugger()
     program_block.traverse(debugger)
     symtable.resetPointer()
-  
+                
 def createNodes(parsed_json):
     #case where you have a list of instructions
     if(type(parsed_json) == list):
@@ -122,11 +146,30 @@ def createNodes(parsed_json):
 
         elif(nodeType == "Call"):
             args = createNodes(parsed_json['args'])
-            name = parsed_json['func']['id']
-            return FunctionCall(name, args)
+            # Special case when calling objects functions
+            if parsed_json['func']['ast_type'] == "Attribute":
+                value = createNodes(parsed_json['func'])
+                return FunctionCall(None, args, value)
+            else:
+                name = parsed_json['func']['id']
+                return FunctionCall(name, args)
+
+        elif(nodeType == "Attribute"):
+            attr_name = parsed_json['attr']
+            value = createNodes(parsed_json['value'])
+            return Attribute(attr_name, value)
 
         else: #discard this instruction
             return None
+
+def isInVuln(vuln_list, vuln):
+    for vuln_elm in vuln_list:
+            if vuln_elm.name == vuln["vulnerability"]:
+                vuln_elm.addSources(vuln["sources"])
+                vuln_elm.addSanitizers(vuln["sanitizers"])
+                vuln_elm.addSinks(vuln["sinks"])
+                return True
+    return False
 
 if __name__== "__main__":
     main(sys.argv, len(sys.argv))

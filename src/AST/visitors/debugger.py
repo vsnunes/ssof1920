@@ -67,9 +67,17 @@ class Debugger(Visitor):
     def visit_function_call(self, function_call):
         self.display("*FunctionCall name = " + function_call.name + " Tainted? = " + str(function_call.tainted))
         self.innerScope()
-        self.display("Args")
-        for arg in function_call.args:
-            arg.accept(self)
+        if len(function_call.args) > 0:
+            self.display("Args")
+            self.innerScope()
+            for arg in function_call.args:
+                arg.accept(self)
+            self.outerScope()
+        if function_call.value is not None: 
+            self.display("Value")
+            self.innerScope()
+            function_call.value.accept(self)
+            self.outerScope()
         self.outerScope()
         
     def visit_variable(self, variable):
@@ -91,4 +99,10 @@ class Debugger(Visitor):
         self.innerScope()
         binop.left.accept(self)
         binop.right.accept(self)
+        self.outerScope()
+
+    def visit_attribute(self, attribute):
+        self.display("*Attribute Id = " + attribute.id + " Tainted? = " + str(attribute.tainted))
+        self.innerScope()
+        attribute.value.accept(self)
         self.outerScope()

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Define PythonPath with AST node folders and visitors
-export PYTHONPATH=AST/:AST/visitors/
+# Define PythonPath with AST node folders, visitors and vulnerabilities definitions
+export PYTHONPATH=AST/:AST/visitors/:vuln/
 
 #Run the tool with Python3 with parameters given by the user
 python3 tool.py $1 $2
