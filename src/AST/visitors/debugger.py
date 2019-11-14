@@ -102,7 +102,7 @@ class Debugger(Visitor):
         self.outerScope()
 
     def visit_attribute(self, attribute):
-        self.display("*Attribute Id = " + attribute.id + " Tainted? = " + str(attribute.tainted))
+        self.display("*Attribute Tainted? = " + str(attribute.tainted) + " Id = " + str(attribute.id))
         self.innerScope()
         attribute.value.accept(self)
         self.outerScope()

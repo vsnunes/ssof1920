@@ -1,2 +1,4 @@
-a = 5
-a.b = x
+a = x
+if a.b.c.d.e.f :
+    pass
+a

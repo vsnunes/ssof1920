@@ -17,48 +17,94 @@
                 }
             ],
             "value": {
-                "ast_type": "Num",
-                "col_offset": 4,
-                "lineno": 1,
-                "n": {
-                    "ast_type": "int",
-                    "n": 5,
-                    "n_str": "5"
-                }
-            }
-        },
-        {
-            "ast_type": "Assign",
-            "col_offset": 0,
-            "lineno": 2,
-            "targets": [
-                {
-                    "ast_type": "Attribute",
-                    "attr": "b",
-                    "col_offset": 0,
-                    "ctx": {
-                        "ast_type": "Store"
-                    },
-                    "lineno": 2,
-                    "value": {
-                        "ast_type": "Name",
-                        "col_offset": 0,
-                        "ctx": {
-                            "ast_type": "Load"
-                        },
-                        "id": "a",
-                        "lineno": 2
-                    }
-                }
-            ],
-            "value": {
                 "ast_type": "Name",
-                "col_offset": 6,
+                "col_offset": 4,
                 "ctx": {
                     "ast_type": "Load"
                 },
                 "id": "x",
-                "lineno": 2
+                "lineno": 1
+            }
+        },
+        {
+            "ast_type": "If",
+            "body": [
+                {
+                    "ast_type": "Pass",
+                    "col_offset": 4,
+                    "lineno": 3
+                }
+            ],
+            "col_offset": 0,
+            "lineno": 2,
+            "orelse": [],
+            "test": {
+                "ast_type": "Attribute",
+                "attr": "f",
+                "col_offset": 3,
+                "ctx": {
+                    "ast_type": "Load"
+                },
+                "lineno": 2,
+                "value": {
+                    "ast_type": "Attribute",
+                    "attr": "e",
+                    "col_offset": 3,
+                    "ctx": {
+                        "ast_type": "Load"
+                    },
+                    "lineno": 2,
+                    "value": {
+                        "ast_type": "Attribute",
+                        "attr": "d",
+                        "col_offset": 3,
+                        "ctx": {
+                            "ast_type": "Load"
+                        },
+                        "lineno": 2,
+                        "value": {
+                            "ast_type": "Attribute",
+                            "attr": "c",
+                            "col_offset": 3,
+                            "ctx": {
+                                "ast_type": "Load"
+                            },
+                            "lineno": 2,
+                            "value": {
+                                "ast_type": "Attribute",
+                                "attr": "b",
+                                "col_offset": 3,
+                                "ctx": {
+                                    "ast_type": "Load"
+                                },
+                                "lineno": 2,
+                                "value": {
+                                    "ast_type": "Name",
+                                    "col_offset": 3,
+                                    "ctx": {
+                                        "ast_type": "Load"
+                                    },
+                                    "id": "a",
+                                    "lineno": 2
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "ast_type": "Expr",
+            "col_offset": 0,
+            "lineno": 4,
+            "value": {
+                "ast_type": "Name",
+                "col_offset": 0,
+                "ctx": {
+                    "ast_type": "Load"
+                },
+                "id": "a",
+                "lineno": 4
             }
         }
     ]

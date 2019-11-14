@@ -81,9 +81,22 @@ def createNodes(parsed_json):
             targets = createNodes(parsed_json['targets'][0])
             value = createNodes(parsed_json['value'])
             
-            targets.tainted = value.tainted
+            # If target is atribute then mark as tainted/untainted the object
+            # not the function.
+            # a.b = x
+            # targets.id will return b
+            # targets.value.id will return a
+            # a.b.c = x
+            if type(targets) == Attribute:
+                targets.tothetop.tainted = value.tainted
+                targets.tainted = value.tainted
+                symtable.reWrite(targets.value.id, targets.value.tainted)
+            else:
+                # normal variable assign
+                targets.tainted = value.tainted
+                symtable.reWrite(targets.id, targets.tainted)
+            print(symtable)
 
-            symtable.reWrite(targets.id, targets.tainted)
 
             return Assign(targets, value)
 
@@ -117,6 +130,8 @@ def createNodes(parsed_json):
                 variable.tainted = tainted_last
 
             symtable.addEntry(variable)
+            print(symtable)
+
 
             return variable
 
@@ -157,6 +172,7 @@ def createNodes(parsed_json):
         elif(nodeType == "Attribute"):
             attr_name = parsed_json['attr']
             value = createNodes(parsed_json['value'])
+
             return Attribute(attr_name, value)
 
         else: #discard this instruction

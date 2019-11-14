@@ -26,4 +26,10 @@ class SymTable:
     def resetPointer(self):
         self.pointer = 0
 
+    def __str__(self):
+        s = "< "
+        for var in self.variables:
+            s += var.id + " "
+        return s + ">"
+
     #something missing for checkings sinks
