@@ -49,14 +49,11 @@ class Debugger(Visitor):
         self.outerScope()
         self.display("Body")
         self.innerScope()
-        for instruction in while_inst.body:
-            instruction.accept(self)
+        while_inst.body.accept(self)
         self.outerScope()
-        if len(while_inst.orelse) > 0:
+        if len(while_inst.orelse.instructions) > 0:
             self.display("Else")
-            self.innerScope()
-            for instruction in while_inst.orelse:
-                instruction.accept(self)
+            while_inst.orelse.accept(self)
             self.outerScope()
         self.outerScope()
 

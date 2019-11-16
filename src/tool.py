@@ -159,10 +159,21 @@ def createNodes(parsed_json, symtable=None):
             return BinaryOperation(left, right)
 
         elif(nodeType == "While"):
+
+            symtableBody = SymTable()
+            symtableElse = SymTable()
+
             condition = createNodes(parsed_json['test'], symtable)
-            body = createNodes(parsed_json['body'], symtable)
+            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody))
             
-            orelse = createNodes(parsed_json['orelse'], symtable)
+            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse))
+
+            clearsymtableBody = body.symtable.clear()
+            clearsymtableElse = orelse.symtable.clear()
+            
+            whilesymtable = clearsymtableBody + clearsymtableElse
+            symtable.concat(whilesymtable)
+
             return While(condition, body, orelse)
 
         elif(nodeType == "NameConstant"):
