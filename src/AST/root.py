@@ -1,6 +1,6 @@
 class Root:
-    def __init__(self, instructions):
-        self.instructions = instructions
+    def __init__(self, body):
+        self.body = body
 
     def traverse(self, visitor):
         """
@@ -10,5 +10,5 @@ class Root:
         Parameters:
         visitor (Visitor): Visitor to traverse the objects
         """
-        for instruction in self.instructions:
+        for instruction in self.body.instructions:
             instruction.accept(visitor)

@@ -37,3 +37,7 @@ class Visitor(metaclass=ABCMeta):
     @abstractmethod
     def visit_attribute(self, attribute):
         pass
+
+    @abstractmethod
+    def visit_block(self, block):
+        pass

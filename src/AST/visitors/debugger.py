@@ -26,12 +26,10 @@ class Debugger(Visitor):
         if_inst.condition.accept(self)
         self.outerScope()
         self.display("Body")
-        for instruction in if_inst.body:
-            instruction.accept(self)
-        if len(if_inst.orelse) > 0:
+        if_inst.body.accept(self)
+        if len(if_inst.orelse.instructions) > 0:
             self.display("Else")
-            for instruction in if_inst.orelse:
-                instruction.accept(self)
+            if_inst.orelse.accept(self)
         self.outerScope()
 
     def visit_assign(self, assign_inst):
@@ -105,4 +103,11 @@ class Debugger(Visitor):
         self.display("*Attribute Tainted? = " + str(attribute.tainted) + " Id = " + str(attribute.id))
         self.innerScope()
         attribute.value.accept(self)
+        self.outerScope()
+
+    def visit_block(self, block):
+        self.display("*Block")
+        self.innerScope()
+        for instruction in block.instructions:
+            instruction.accept(self)
         self.outerScope()

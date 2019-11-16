@@ -17,14 +17,13 @@
                 }
             ],
             "value": {
-                "ast_type": "Num",
+                "ast_type": "Name",
                 "col_offset": 4,
-                "lineno": 1,
-                "n": {
-                    "ast_type": "int",
-                    "n": 1,
-                    "n_str": "1"
-                }
+                "ctx": {
+                    "ast_type": "Load"
+                },
+                "id": "x",
+                "lineno": 1
             }
         },
         {
@@ -43,14 +42,13 @@
                 }
             ],
             "value": {
-                "ast_type": "Num",
+                "ast_type": "Name",
                 "col_offset": 4,
-                "lineno": 2,
-                "n": {
-                    "ast_type": "int",
-                    "n": 2,
-                    "n_str": "2"
-                }
+                "ctx": {
+                    "ast_type": "Load"
+                },
+                "id": "a",
+                "lineno": 2
             }
         }
     ]
