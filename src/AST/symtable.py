@@ -31,7 +31,7 @@ class SymTable:
                 self.variables[i].tainted = tainted
                 break
 
-    def clear(self):
+    def clear(self, onlyTainted=True):
         """
         Returns the symtable with only the last change of every variable
         discarding intermediate states.
@@ -40,9 +40,14 @@ class SymTable:
         self.alreadyReached = []
         for i in range(len(self.variables) - 1, -1, -1):
             # Only merge if tainted values since we want worst case scenario
-            if (self.variables[i].id not in self.alreadyReached) and self.variables[i].tainted:
-                self.alreadyReached.append(self.variables[i].id)
-                self.cleaned.append(self.variables[i])
+            if onlyTainted:
+                if (self.variables[i].id not in self.alreadyReached) and self.variables[i].tainted:
+                    self.alreadyReached.append(self.variables[i].id)
+                    self.cleaned.append(self.variables[i])
+            else:
+                if (self.variables[i].id not in self.alreadyReached):
+                    self.alreadyReached.append(self.variables[i].id)
+                    self.cleaned.append(self.variables[i])
 
         sym = SymTable()
         sym.variables = self.cleaned

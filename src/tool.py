@@ -108,10 +108,11 @@ def createNodes(parsed_json, symtable=None):
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse))
 
             clearsymtableBody = body.symtable.clear()
-            clearsymtableElse = orelse.symtable.clear()
+            clearsymtableElse = orelse.symtable.clear(False)
 
             ifsymtable = clearsymtableBody + clearsymtableElse
-            symtable.concat(ifsymtable)
+
+            symtable.concat(ifsymtable) 
 
             return If(condition, body, orelse)
                 
@@ -169,7 +170,7 @@ def createNodes(parsed_json, symtable=None):
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse))
 
             clearsymtableBody = body.symtable.clear()
-            clearsymtableElse = orelse.symtable.clear()
+            clearsymtableElse = orelse.symtable.clear(False)
             
             whilesymtable = clearsymtableBody + clearsymtableElse
             symtable.concat(whilesymtable)
