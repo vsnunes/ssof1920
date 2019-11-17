@@ -6,6 +6,7 @@ class Variable(Instruction):
         # variable identifier
         self.id = id
         self.tainted = True
+        self.type = ""
 
     def __eq__(self, other):
         if self.__class__ == other.__class__:

@@ -13,8 +13,8 @@ from AST.functioncall import FunctionCall
 from AST.attribute import Attribute
 from vuln.vulnerability import Vulnerability
 
-
 from AST.visitors.debugger import Debugger
+from AST.visitors.labeler import Labeler
 
 def main(argv, arg):
 
@@ -44,14 +44,22 @@ def main(argv, arg):
             vuln_list.append(Vulnerability(vuln["vulnerability"], vuln["sources"], vuln["sanitizers"], vuln["sinks"]))
     
     #for vuln in vuln_list:
-        #print(vuln)        
+    #    print(vuln)        
     
 
     parsed_json = json.loads(json_code)
     
     program_block = createNodes(parsed_json)
-    debugger = Debugger()
-    program_block.traverse(debugger)
+    
+    for vuln in vuln_list:
+        #For each vulnerability mark each function as source, sanitizer or sink
+        labeler = Labeler(vuln)
+        program_block.traverse(labeler)
+        #print tree
+        debugger = Debugger()
+        program_block.traverse(debugger)
+        #detect explicit -> append to file
+        #detect implicit -> append to file
                 
 def createNodes(parsed_json, symtable=None):
     #case where you have a list of instructions
@@ -88,11 +96,16 @@ def createNodes(parsed_json, symtable=None):
             if type(targets) == Attribute:
                 targets.tothetop.tainted = value.tainted
                 targets.tainted = value.tainted
+                
                 symtable.reWrite(targets.value.id, targets.value.tainted)
             else:
                 # normal variable assign
                 targets.tainted = value.tainted
                 symtable.reWrite(targets.id, targets.tainted)
+
+            # correct left value to remove source tag
+            targets.type = ""
+
             print(symtable)
 
 
@@ -138,6 +151,10 @@ def createNodes(parsed_json, symtable=None):
 
             if tainted_last is not None:
                 variable.tainted = tainted_last
+            
+            symvar = symtable.getVariable(variable.id)
+            if symvar is None or symvar.type == "source":
+                variable.type = "source"
 
             symtable.addEntry(variable)
             print(symtable)

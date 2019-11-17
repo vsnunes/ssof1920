@@ -31,10 +31,6 @@ class Visitor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def visit_function_call(self, function_call):
-        pass
-
-    @abstractmethod
     def visit_attribute(self, attribute):
         pass
 

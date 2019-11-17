@@ -10,7 +10,7 @@ class FunctionCall(Instruction):
             self.name = name
         
         self.args = args
-        self.type = None
+        self.type = ""
         self.tainted = False
         
         # Check if arguments are tainted
@@ -21,10 +21,6 @@ class FunctionCall(Instruction):
         # is tainted
         if self.value is not None:
             self.tainted = self.tainted or self.value.tainted
-
-    def setType(self, _type):
-        self.type = _type
-
 
     def accept(self, visitor):
         visitor.visit_function_call(self)

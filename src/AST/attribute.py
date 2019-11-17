@@ -11,10 +11,8 @@ class Attribute(Instruction):
         
 
         if type(self.value) == Attribute:
-            print("Attr " +  str(type(self.value)))
             self.tothetop = self.value.tothetop
         else:
-            print("Var " +  str(type(self.value)))
             self.tothetop = self.value
 
     def accept(self, visitor):
