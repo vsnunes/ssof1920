@@ -1,0 +1,46 @@
+{
+    "ast_type": "Module",
+    "body": [
+        {
+            "ast_type": "Assign",
+            "col_offset": 0,
+            "lineno": 1,
+            "targets": [
+                {
+                    "ast_type": "Name",
+                    "col_offset": 0,
+                    "ctx": {
+                        "ast_type": "Store"
+                    },
+                    "id": "get",
+                    "lineno": 1
+                }
+            ],
+            "value": {
+                "args": [],
+                "ast_type": "Call",
+                "col_offset": 6,
+                "func": {
+                    "ast_type": "Attribute",
+                    "attr": "execute",
+                    "col_offset": 6,
+                    "ctx": {
+                        "ast_type": "Load"
+                    },
+                    "lineno": 1,
+                    "value": {
+                        "ast_type": "Name",
+                        "col_offset": 6,
+                        "ctx": {
+                            "ast_type": "Load"
+                        },
+                        "id": "obj",
+                        "lineno": 1
+                    }
+                },
+                "keywords": [],
+                "lineno": 1
+            }
+        }
+    ]
+}

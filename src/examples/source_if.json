@@ -1,0 +1,109 @@
+{
+    "ast_type": "Module",
+    "body": [
+        {
+            "ast_type": "Assign",
+            "col_offset": 0,
+            "lineno": 1,
+            "targets": [
+                {
+                    "ast_type": "Name",
+                    "col_offset": 0,
+                    "ctx": {
+                        "ast_type": "Store"
+                    },
+                    "id": "a",
+                    "lineno": 1
+                }
+            ],
+            "value": {
+                "ast_type": "Name",
+                "col_offset": 4,
+                "ctx": {
+                    "ast_type": "Load"
+                },
+                "id": "x",
+                "lineno": 1
+            }
+        },
+        {
+            "ast_type": "If",
+            "body": [
+                {
+                    "ast_type": "If",
+                    "body": [
+                        {
+                            "ast_type": "Assign",
+                            "col_offset": 8,
+                            "lineno": 4,
+                            "targets": [
+                                {
+                                    "ast_type": "Name",
+                                    "col_offset": 8,
+                                    "ctx": {
+                                        "ast_type": "Store"
+                                    },
+                                    "id": "a",
+                                    "lineno": 4
+                                }
+                            ],
+                            "value": {
+                                "ast_type": "Name",
+                                "col_offset": 12,
+                                "ctx": {
+                                    "ast_type": "Load"
+                                },
+                                "id": "b",
+                                "lineno": 4
+                            }
+                        }
+                    ],
+                    "col_offset": 4,
+                    "lineno": 3,
+                    "orelse": [],
+                    "test": {
+                        "ast_type": "NameConstant",
+                        "col_offset": 7,
+                        "lineno": 3,
+                        "value": "True"
+                    }
+                }
+            ],
+            "col_offset": 0,
+            "lineno": 2,
+            "orelse": [],
+            "test": {
+                "ast_type": "NameConstant",
+                "col_offset": 3,
+                "lineno": 2,
+                "value": "True"
+            }
+        },
+        {
+            "ast_type": "Assign",
+            "col_offset": 0,
+            "lineno": 5,
+            "targets": [
+                {
+                    "ast_type": "Name",
+                    "col_offset": 0,
+                    "ctx": {
+                        "ast_type": "Store"
+                    },
+                    "id": "b",
+                    "lineno": 5
+                }
+            ],
+            "value": {
+                "ast_type": "Num",
+                "col_offset": 4,
+                "lineno": 5,
+                "n": {
+                    "ast_type": "int",
+                    "n": 2,
+                    "n_str": "2"
+                }
+            }
+        }
+    ]
+}

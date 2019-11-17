@@ -15,6 +15,8 @@ from vuln.vulnerability import Vulnerability
 
 from AST.visitors.debugger import Debugger
 from AST.visitors.labeler import Labeler
+from AST.visitors.explicitleaks import DetectExplicitLeaks
+
 
 def main(argv, arg):
 
@@ -56,9 +58,11 @@ def main(argv, arg):
         labeler = Labeler(vuln)
         program_block.traverse(labeler)
         #print tree
-        debugger = Debugger()
-        program_block.traverse(debugger)
+        #debugger = Debugger()
+        #program_block.traverse(debugger)
         #detect explicit -> append to file
+        explicitleaks = DetectExplicitLeaks(vuln)
+        program_block.traverse(explicitleaks)
         #detect implicit -> append to file
                 
 def createNodes(parsed_json, symtable=None):
