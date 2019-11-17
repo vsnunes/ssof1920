@@ -1,10 +1,9 @@
 #!/bin/bash
-# Changes current directory to project folder in order to be able to
-# run the tool from any folder
-cd $(dirname $0)
+# Project folder in order to be able to run the tool from any folder
+export PROJECT_PATH=$(dirname $0)
 
 # Define PythonPath with AST node folders, visitors and vulnerabilities definitions
-export PYTHONPATH=AST/:AST/visitors/:vuln/
+export PYTHONPATH=$PROJECT_PATH/AST/:$PROJECT_PATH/AST/visitors/:$PROJECT_PATH/vuln/
 
 #Run the tool with Python3 with parameters given by the user
-python3 tool.py $1 $2
+python3 $PROJECT_PATH/tool.py $1 $2
