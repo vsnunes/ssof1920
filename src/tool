@@ -1,4 +1,8 @@
 #!/bin/bash
+# Changes current directory to project folder in order to be able to
+# run the tool from any folder
+cd $(dirname $0)
+
 # Define PythonPath with AST node folders, visitors and vulnerabilities definitions
 export PYTHONPATH=AST/:AST/visitors/:vuln/
 
