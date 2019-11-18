@@ -1,5 +1,6 @@
 from visitor import Visitor
 from sourcetable import SourceTable
+from copy import deepcopy
 
 class DetectExplicitLeaks(Visitor):
     """
@@ -13,15 +14,35 @@ class DetectExplicitLeaks(Visitor):
     
     def visit_if(self, if_inst, sourcetable=None):
         if_inst.condition.accept(self,sourcetable)
-        if_inst.body.accept(self,sourcetable)
+
+        sourcetableBody = SourceTable()
+        sourcetableBody.branches = deepcopy(sourcetable.branches)
+        sourcetableBody.variables = deepcopy(sourcetable.variables)
+        if_inst.body.accept(self,sourcetableBody)
+
         if len(if_inst.orelse.instructions) > 0:
-            if_inst.orelse.accept(self,sourcetable)
+            sourcetableElse = SourceTable()
+            sourcetableElse.branches = deepcopy(sourcetable.branches)
+            sourcetableElse.variables = deepcopy(sourcetable.variables)
+            if_inst.orelse.accept(self,sourcetableElse)
+
+            sourcetable.branches = sourcetableBody.branches + sourcetableElse.branches
+            sourcetable.variables = sourcetableBody.variables + sourcetableElse.variables
+
+        else:
+            
+            sourcestable.branches += sourcetableBody.branches
+            sourcestable.variables += sourcetableBody.variables
+
+        
+        #
 
     
     def visit_assign(self, assign_inst, sourcetable=None):
         #this symtable have the purpose of tracking it values are sources
         dummyStable = SourceTable()
         assign_inst.leftValues.accept(self,dummyStable)
+        
         
         #pass dummyStable to right side
         dummyStable = SourceTable()
@@ -41,7 +62,11 @@ class DetectExplicitLeaks(Visitor):
         #source -> b
         # c -> a
         # d -> a
+
+        sourcetable.delete(assign_inst.leftValues.id)
         listOfSources = sourcetable.addVarToSources(assign_inst.leftValues.id, dummyStable.variables, sources_id)
+
+        
 
     
     def visit_while(self, while_inst, sourcetable=None):
@@ -109,6 +134,7 @@ class DetectExplicitLeaks(Visitor):
 
     
     def visit_block(self, block, sourcetable=None):
-        sourcetable = SourceTable()
+        if sourcetable is None:
+            sourcetable = SourceTable()
         for instruction in block.instructions:
             instruction.accept(self,sourcetable)

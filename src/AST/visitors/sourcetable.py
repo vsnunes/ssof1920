@@ -49,15 +49,23 @@ class SourceTable:
             self.branches.append(stable)
 
     def delete(self, id):
+        branches = []
         for entry in self.branches:
             newentry = entry[1:]
-            newentry.remove(id)
-            entry = newentry
+            if id in newentry:
+                entry2 = [entry[0]] + list(filter((id).__ne__, newentry))
+            else:
+                entry2 = entry
+
+            branches.append(entry2)
+        self.branches = branches
+            
+            
 
     def __str__(self):
-        toPrint = ""
+        toPrint = "branches-> "
         for branch in self.branches:
-            toPrint += str(branch) + '\n'
-        return toPrint
-# [c,b,d,e,a,d,r,t]
+            toPrint += str(branch) + ' '
+        toPrint += "variables-> " + str(self.variables)
 
+        return toPrint
