@@ -10,5 +10,5 @@ class Root:
         Parameters:
         visitor (Visitor): Visitor to traverse the objects
         """
-        for instruction in self.body.instructions:
-            instruction.accept(visitor)
+        
+        self.body.accept(visitor)

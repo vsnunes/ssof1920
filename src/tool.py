@@ -110,9 +110,6 @@ def createNodes(parsed_json, symtable=None):
             # correct left value to remove source tag
             targets.type = ""
 
-            print(symtable)
-
-
             return Assign(targets, value)
 
         elif(nodeType == "If"):
@@ -161,7 +158,6 @@ def createNodes(parsed_json, symtable=None):
                 variable.type = "source"
 
             symtable.addEntry(variable)
-            print(symtable)
 
 
             return variable

@@ -7,4 +7,4 @@ class Block(Instruction):
         self.instructions = instructions
 
     def accept(self, visitor, sourcetable=None):
-        visitor.visit_block(self,)
+        visitor.visit_block(self,sourcetable)
