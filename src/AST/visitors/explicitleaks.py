@@ -31,8 +31,8 @@ class DetectExplicitLeaks(Visitor):
 
         else:
             
-            sourcestable.branches += sourcetableBody.branches
-            sourcestable.variables += sourcetableBody.variables
+            sourcetable.branches += sourcetableBody.branches
+            sourcetable.variables += sourcetableBody.variables
 
         
         #

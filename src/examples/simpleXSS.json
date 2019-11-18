@@ -78,6 +78,48 @@
                         "id": "v",
                         "lineno": 4
                     }
+                },
+                {
+                    "ast_type": "If",
+                    "body": [
+                        {
+                            "ast_type": "Assign",
+                            "col_offset": 8,
+                            "lineno": 6,
+                            "targets": [
+                                {
+                                    "ast_type": "Name",
+                                    "col_offset": 8,
+                                    "ctx": {
+                                        "ast_type": "Store"
+                                    },
+                                    "id": "d",
+                                    "lineno": 6
+                                }
+                            ],
+                            "value": {
+                                "ast_type": "Name",
+                                "col_offset": 12,
+                                "ctx": {
+                                    "ast_type": "Load"
+                                },
+                                "id": "j",
+                                "lineno": 6
+                            }
+                        }
+                    ],
+                    "col_offset": 4,
+                    "lineno": 5,
+                    "orelse": [],
+                    "test": {
+                        "ast_type": "Name",
+                        "col_offset": 7,
+                        "ctx": {
+                            "ast_type": "Load"
+                        },
+                        "id": "k",
+                        "lineno": 5
+                    }
                 }
             ],
             "col_offset": 0,
@@ -86,7 +128,7 @@
                 {
                     "ast_type": "Assign",
                     "col_offset": 4,
-                    "lineno": 6,
+                    "lineno": 8,
                     "targets": [
                         {
                             "ast_type": "Name",
@@ -95,7 +137,7 @@
                                 "ast_type": "Store"
                             },
                             "id": "d",
-                            "lineno": 6
+                            "lineno": 8
                         }
                     ],
                     "value": {
@@ -105,13 +147,13 @@
                             "ast_type": "Load"
                         },
                         "id": "z",
-                        "lineno": 6
+                        "lineno": 8
                     }
                 },
                 {
                     "ast_type": "Assign",
                     "col_offset": 4,
-                    "lineno": 7,
+                    "lineno": 9,
                     "targets": [
                         {
                             "ast_type": "Name",
@@ -120,7 +162,7 @@
                                 "ast_type": "Store"
                             },
                             "id": "d",
-                            "lineno": 7
+                            "lineno": 9
                         }
                     ],
                     "value": {
@@ -130,7 +172,7 @@
                             "ast_type": "Load"
                         },
                         "id": "u",
-                        "lineno": 7
+                        "lineno": 9
                     }
                 }
             ],
@@ -147,7 +189,7 @@
         {
             "ast_type": "Expr",
             "col_offset": 0,
-            "lineno": 8,
+            "lineno": 10,
             "value": {
                 "args": [
                     {
@@ -157,7 +199,7 @@
                             "ast_type": "Load"
                         },
                         "id": "d",
-                        "lineno": 8
+                        "lineno": 10
                     },
                     {
                         "ast_type": "Name",
@@ -166,7 +208,7 @@
                             "ast_type": "Load"
                         },
                         "id": "f",
-                        "lineno": 8
+                        "lineno": 10
                     }
                 ],
                 "ast_type": "Call",
@@ -178,11 +220,11 @@
                         "ast_type": "Load"
                     },
                     "id": "Markup",
-                    "lineno": 8
+                    "lineno": 10
                 },
                 "keywords": [],
                 "kwargs": null,
-                "lineno": 8,
+                "lineno": 10,
                 "starargs": null
             }
         }
