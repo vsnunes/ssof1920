@@ -7,5 +7,5 @@ class While(Instruction):
         self.body = body
         self.orelse = orelse
 
-    def accept(self, visitor):
-        visitor.visit_while(self)
+    def accept(self, visitor, sourcetable=None):
+        visitor.visit_while(self, sourcetable)

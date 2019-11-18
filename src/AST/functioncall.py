@@ -22,5 +22,5 @@ class FunctionCall(Instruction):
         if self.value is not None:
             self.tainted = self.tainted or self.value.tainted
 
-    def accept(self, visitor):
-        visitor.visit_function_call(self)
+    def accept(self, visitor, sourcetable=None):
+        visitor.visit_function_call(self,sourcetable)

@@ -6,5 +6,5 @@ class Block(Instruction):
         self.symtable = symtable
         self.instructions = instructions
 
-    def accept(self, visitor):
-        visitor.visit_block(self)
+    def accept(self, visitor, sourcetable=None):
+        visitor.visit_block(self,)

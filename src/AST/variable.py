@@ -14,5 +14,5 @@ class Variable(Instruction):
         
         return False
 
-    def accept(self, visitor):
-        visitor.visit_variable(self)
+    def accept(self, visitor, sourcetable=None):
+        visitor.visit_variable(self, sourcetable)
