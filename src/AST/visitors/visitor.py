@@ -3,37 +3,37 @@ from abc import ABCMeta, abstractmethod
 class Visitor(metaclass=ABCMeta):
     
     @abstractmethod
-    def visit_if(self, if_inst):
+    def visit_if(self, if_inst,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_assign(self, assign_inst):
+    def visit_assign(self, assign_inst,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_while(self, while_inst):
+    def visit_while(self, while_inst,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_function_call(self, function_call):
+    def visit_function_call(self, function_call,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_variable(self, variable):
+    def visit_variable(self, variable,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_expr(self, expr):
+    def visit_expr(self, expr,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_binop(self, binop):
+    def visit_binop(self, binop,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_attribute(self, attribute):
+    def visit_attribute(self, attribute,sourcetable=None):
         pass
 
     @abstractmethod
-    def visit_block(self, block):
+    def visit_block(self, block,sourcetable=None):
         pass

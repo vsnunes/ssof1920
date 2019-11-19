@@ -5,5 +5,5 @@ class Instruction(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def accept(self, visitor):
+    def accept(self, visitor, sourcetable=None):
         pass

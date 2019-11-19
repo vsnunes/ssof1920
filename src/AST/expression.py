@@ -8,5 +8,5 @@ class Expression(Instruction):
         else:
             self.tainted = tainted
 
-    def accept(self, visitor):
-        visitor.visit_expr(self)
+    def accept(self, visitor, sourcetable=None):
+        visitor.visit_expr(self,sourcetable)

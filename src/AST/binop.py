@@ -6,5 +6,5 @@ class BinaryOperation(Instruction):
         self.right = right
         self.tainted = self.left.tainted or self.right.tainted
 
-    def accept(self, visitor):
-        visitor.visit_binop(self)
+    def accept(self, visitor, sourcetable=None):
+        visitor.visit_binop(self,sourcetable)
