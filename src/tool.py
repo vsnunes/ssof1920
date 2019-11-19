@@ -17,6 +17,7 @@ from AST.visitors.debugger import Debugger
 from AST.visitors.labeler import Labeler
 from AST.visitors.explicitleaks import DetectExplicitLeaks
 
+vuln_list = []
 
 def main(argv, arg):
 
@@ -40,7 +41,6 @@ def main(argv, arg):
 
     parsed_vulnerabilities = json.loads(json_vulnPatterns)
 
-    vuln_list = []
     for vuln in parsed_vulnerabilities:
         if not isInVuln(vuln_list, vuln):
             vuln_list.append(Vulnerability(vuln["vulnerability"], vuln["sources"], vuln["sanitizers"], vuln["sinks"]))
@@ -51,27 +51,25 @@ def main(argv, arg):
 
     parsed_json = json.loads(json_code)
     
-    program_block = createNodes(parsed_json)
     
     for vuln in vuln_list:
+        program_block = createNodes(parsed_json, None, vuln)
         #For each vulnerability mark each function as source, sanitizer or sink
-        labeler = Labeler(vuln)
-        program_block.traverse(labeler)
         #print tree
-        #debugger = Debugger()
-        #program_block.traverse(debugger)
+        debugger = Debugger()
+        program_block.traverse(debugger)
         #detect explicit -> append to file
         explicitleaks = DetectExplicitLeaks(vuln)
         program_block.traverse(explicitleaks)
         #detect implicit -> append to file
                 
-def createNodes(parsed_json, symtable=None):
+def createNodes(parsed_json, symtable=None, vuln=None):
     #case where you have a list of instructions
     if(type(parsed_json) == list):
         instruction_nodes = []
 
         for instruction in parsed_json:
-            node = createNodes(instruction, symtable)
+            node = createNodes(instruction, symtable, vuln)
 
             if node is not None: #discarded instruction simply ignore
                 instruction_nodes.append(node)
@@ -84,12 +82,12 @@ def createNodes(parsed_json, symtable=None):
             instructions = []
             symt = SymTable()
             for instruction in parsed_json['body']:
-                instructions.append(createNodes(instruction, symt))
+                instructions.append(createNodes(instruction, symt, vuln))
             return Root(Block(symt, instructions))
 
         elif(nodeType == "Assign"):
-            targets = createNodes(parsed_json['targets'][0], symtable)
-            value = createNodes(parsed_json['value'], symtable)
+            targets = createNodes(parsed_json['targets'][0], symtable, vuln)
+            value = createNodes(parsed_json['value'], symtable, vuln)
             
             # If target is atribute then mark as tainted/untainted the object
             # not the function.
@@ -113,13 +111,13 @@ def createNodes(parsed_json, symtable=None):
             return Assign(targets, value)
 
         elif(nodeType == "If"):
-            condition = createNodes(parsed_json['test'], symtable)  
+            condition = createNodes(parsed_json['test'], symtable, vuln)  
             
             symtableBody = SymTable()
             symtableElse = SymTable()
 
-            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody))
-            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse))
+            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
+            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 
             clearsymtableBody = body.symtable.clear()
             clearsymtableElse = orelse.symtable.clear(False)
@@ -131,11 +129,11 @@ def createNodes(parsed_json, symtable=None):
             return If(condition, body, orelse)
                 
         elif(nodeType == "Expr"):
-            return Expression(createNodes(parsed_json['value'], symtable))
+            return Expression(createNodes(parsed_json['value'], symtable, vuln))
 
         elif(nodeType == "Compare"):
-            comparators = createNodes(parsed_json['comparators'], symtable)
-            variable = createNodes(parsed_json['left'], symtable)
+            comparators = createNodes(parsed_json['comparators'], symtable, vuln)
+            variable = createNodes(parsed_json['left'], symtable, vuln)
 
             isTainted = False
             for expression in comparators:
@@ -163,7 +161,7 @@ def createNodes(parsed_json, symtable=None):
             return variable
 
         elif(nodeType == "Num"):
-            return createNodes(parsed_json['n'], symtable)
+            return createNodes(parsed_json['n'], symtable, vuln)
 
         elif(nodeType == "Str"):
             return Expression(None, False)
@@ -172,8 +170,8 @@ def createNodes(parsed_json, symtable=None):
             return Expression(None, False)
 
         elif(nodeType == "BinOp"):
-            left = createNodes(parsed_json['left'], symtable)
-            right = createNodes(parsed_json['right'], symtable)
+            left = createNodes(parsed_json['left'], symtable, vuln)
+            right = createNodes(parsed_json['right'], symtable, vuln)
             return BinaryOperation(left, right)
 
         elif(nodeType == "While"):
@@ -181,10 +179,10 @@ def createNodes(parsed_json, symtable=None):
             symtableBody = SymTable()
             symtableElse = SymTable()
 
-            condition = createNodes(parsed_json['test'], symtable)
-            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody))
+            condition = createNodes(parsed_json['test'], symtable, vuln)
+            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
             
-            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse))
+            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 
             clearsymtableBody = body.symtable.clear()
             clearsymtableElse = orelse.symtable.clear(False)
@@ -198,18 +196,27 @@ def createNodes(parsed_json, symtable=None):
             return Expression(None, False)
 
         elif(nodeType == "Call"):
-            args = createNodes(parsed_json['args'], symtable)
+            args = createNodes(parsed_json['args'], symtable, vuln)
             # Special case when calling objects functions
             if parsed_json['func']['ast_type'] == "Attribute":
-                value = createNodes(parsed_json['func'], symtable)
-                return FunctionCall(None, args, value)
+                value = createNodes(parsed_json['func'], symtable, vuln)
+                fcall = FunctionCall(None, args, value)
+                fcall.type = vuln.getType(fcall.name)
+                if fcall.type == "source":
+                    fcall.tainted = True
+                return fcall
             else:
                 name = parsed_json['func']['id']
-                return FunctionCall(name, args)
+
+                fcall = FunctionCall(name, args)
+                fcall.type = vuln.getType(fcall.name)
+                if fcall.type == "source":
+                    fcall.tainted = True
+                return fcall
 
         elif(nodeType == "Attribute"):
             attr_name = parsed_json['attr']
-            value = createNodes(parsed_json['value'], symtable)
+            value = createNodes(parsed_json['value'], symtable, vuln)
 
             return Attribute(attr_name, value)
 

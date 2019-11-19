@@ -7,3 +7,4 @@ if 1:
     b = a
 c = b
 c = a
+Markup(a)

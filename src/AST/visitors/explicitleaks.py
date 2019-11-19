@@ -46,6 +46,7 @@ class DetectExplicitLeaks(Visitor):
         
         #pass dummyStable to right side
         dummyStable = SourceTable()
+        #dummyStable.branches = deepcopy(sourcetable.branches)
         assign_inst.values.accept(self,dummyStable)
         sources_id = []
         for sources in dummyStable.branches:
@@ -65,8 +66,7 @@ class DetectExplicitLeaks(Visitor):
 
         sourcetable.delete(assign_inst.leftValues.id)
         listOfSources = sourcetable.addVarToSources(assign_inst.leftValues.id, dummyStable.variables, sources_id)
-
-        
+        print("ASSIGN: ", sourcetable)
 
     
     def visit_while(self, while_inst, sourcetable=None):
@@ -79,8 +79,7 @@ class DetectExplicitLeaks(Visitor):
     def visit_function_call(self, function_call, sourcetable=None):
         if function_call.type == "source":
             sourcetable.addSource(function_call.name)
-
-
+        
         if function_call.type == "sink" and function_call.tainted == True:
             sourcesToReturn = []
             dummyStable = SourceTable()
@@ -105,6 +104,7 @@ class DetectExplicitLeaks(Visitor):
             
             print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}".format(self.vulnerability.name, function_call.name, list(set(sourcesToReturn)))+'\n'+"************************")
             #print(sourcetable)
+        
         else:
             for arg in function_call.args:
                 arg.accept(self,sourcetable)

@@ -213,6 +213,37 @@
                 "id": "a",
                 "lineno": 9
             }
+        },
+        {
+            "ast_type": "Expr",
+            "col_offset": 0,
+            "lineno": 10,
+            "value": {
+                "args": [
+                    {
+                        "ast_type": "Name",
+                        "col_offset": 7,
+                        "ctx": {
+                            "ast_type": "Load"
+                        },
+                        "id": "a",
+                        "lineno": 10
+                    }
+                ],
+                "ast_type": "Call",
+                "col_offset": 0,
+                "func": {
+                    "ast_type": "Name",
+                    "col_offset": 0,
+                    "ctx": {
+                        "ast_type": "Load"
+                    },
+                    "id": "Markup",
+                    "lineno": 10
+                },
+                "keywords": [],
+                "lineno": 10
+            }
         }
     ]
 }
