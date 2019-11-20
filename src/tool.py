@@ -17,6 +17,9 @@ from AST.visitors.debugger import Debugger
 from AST.visitors.labeler import Labeler
 from AST.visitors.explicitleaks import DetectExplicitLeaks
 
+from copy import deepcopy
+
+
 vuln_list = []
 
 def main(argv, arg):
@@ -43,14 +46,17 @@ def main(argv, arg):
 
     for vuln in parsed_vulnerabilities:
         if not isInVuln(vuln_list, vuln):
-            vuln_list.append(Vulnerability(vuln["vulnerability"], vuln["sources"], vuln["sanitizers"], vuln["sinks"]))
+            vuln_list.append(Vulnerability(vuln["vulnerability"], vuln["sources"], vuln["sanitizers"], vuln["sinks"], ""))
     
     #for vuln in vuln_list:
     #    print(vuln)        
     
 
     parsed_json = json.loads(json_code)
-    
+
+    output_name = 'viado.json'
+
+    output_file = open(output_name,'a+')
     
     for vuln in vuln_list:
         program_block = createNodes(parsed_json, None, vuln)
@@ -62,6 +68,10 @@ def main(argv, arg):
         explicitleaks = DetectExplicitLeaks(vuln)
         program_block.traverse(explicitleaks)
         #detect implicit -> append to file
+        json.dump(vuln.output, output_file, ensure_ascii=False, indent=4)
+    
+    output_file.close()
+
                 
 def createNodes(parsed_json, symtable=None, vuln=None):
     #case where you have a list of instructions
@@ -113,8 +123,8 @@ def createNodes(parsed_json, symtable=None, vuln=None):
         elif(nodeType == "If"):
             condition = createNodes(parsed_json['test'], symtable, vuln)  
             
-            symtableBody = SymTable()
-            symtableElse = SymTable()
+            symtableBody = deepcopy(symtable)
+            symtableElse = deepcopy(symtable)
 
             body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
@@ -176,10 +186,11 @@ def createNodes(parsed_json, symtable=None, vuln=None):
 
         elif(nodeType == "While"):
 
-            symtableBody = SymTable()
-            symtableElse = SymTable()
-
             condition = createNodes(parsed_json['test'], symtable, vuln)
+
+            symtableBody = deepcopy(symtable)
+            symtableElse = deepcopy(symtable)
+
             body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
             
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))

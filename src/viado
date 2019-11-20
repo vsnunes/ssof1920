@@ -1,0 +1,4 @@
+Vulnerability: XSS
+Sink: Markup
+Sources: ['y', 'x']
+Sanitizers: 
