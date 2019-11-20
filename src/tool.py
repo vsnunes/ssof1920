@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys, json
+import sys, json, ntpath, os
 from AST.root import Root
 from AST.block import Block
 from AST.assign import Assign
@@ -44,33 +44,32 @@ def main(argv, arg):
 
     parsed_vulnerabilities = json.loads(json_vulnPatterns)
 
+    output_name = ntpath.basename(argv[1]).split('.json')[0] + ".out.json"
+
+    data = []
+    with open(output_name, 'w') as outfile:
+        json.dump(data, outfile)
+
     for vuln in parsed_vulnerabilities:
         if not isInVuln(vuln_list, vuln):
-            vuln_list.append(Vulnerability(vuln["vulnerability"], vuln["sources"], vuln["sanitizers"], vuln["sinks"], ""))
-    
-    #for vuln in vuln_list:
-    #    print(vuln)        
+            vuln_list.append(Vulnerability(vuln["vulnerability"], vuln["sources"], vuln["sanitizers"], vuln["sinks"], output_name))      
     
 
     parsed_json = json.loads(json_code)
 
-    output_name = 'viado.json'
-
-    output_file = open(output_name,'a+')
+    
     
     for vuln in vuln_list:
         program_block = createNodes(parsed_json, None, vuln)
         #For each vulnerability mark each function as source, sanitizer or sink
         #print tree
-        debugger = Debugger()
-        program_block.traverse(debugger)
+        #debugger = Debugger()
+        #program_block.traverse(debugger)
         #detect explicit -> append to file
         explicitleaks = DetectExplicitLeaks(vuln)
         program_block.traverse(explicitleaks)
         #detect implicit -> append to file
-        json.dump(vuln.output, output_file, ensure_ascii=False, indent=4)
     
-    output_file.close()
 
                 
 def createNodes(parsed_json, symtable=None, vuln=None):

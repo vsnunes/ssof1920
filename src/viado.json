@@ -1,9 +1,0 @@
-{
-    "Vulnerability": "XSS",
-    "Sink": "Markup",
-    "Source": [
-        "y",
-        "x"
-    ],
-    "Sanitizer": ""
-}

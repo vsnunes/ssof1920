@@ -1,3 +1,4 @@
+import json
 from visitor import Visitor
 from sourcetable import SourceTable
 from copy import deepcopy
@@ -69,7 +70,6 @@ class DetectExplicitLeaks(Visitor):
         self.assignTable = None
         self.assignID = None
 
-        print(sourcetable)
 
     
     def visit_while(self, while_inst, sourcetable=None):
@@ -107,8 +107,6 @@ class DetectExplicitLeaks(Visitor):
                 tmpSource = self.assignTable
                 self.toDelete = False
 
-            print(tmpSource)
-
             sourcesToReturn = []
             dummyStable = SourceTable()
             for arg in function_call.args:
@@ -123,8 +121,6 @@ class DetectExplicitLeaks(Visitor):
                 sourcesToReturn.append(source)
                 tmpSource.addSourceIfNew(source)
             
-            print(tmpSource)
-
             if self.assignTable != None:
                 listOfSources = tmpSource.addVarToSources(self.assignID, dummyStable.variables, sourcesToReturn)
 
@@ -139,8 +135,15 @@ class DetectExplicitLeaks(Visitor):
             
             
             print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}".format(self.vulnerability.name, function_call.name, list(set(sourcesToReturn)))+'\n'+"************************")
-            self.vulnerability.output = {'Vulnerability': self.vulnerability.name, 'Sink': function_call.name, 'Source': list(set(sourcesToReturn)), 'Sanitizer': ""}
-            #print(sourcetable)
+            container = {'vulnerability': self.vulnerability.name, 'sink': function_call.name, 'source': list(set(sourcesToReturn)), 'sanitizer': list()}
+
+            with open(self.vulnerability.output, "r") as jsonFile:
+                data = json.load(jsonFile)
+            tmp = data
+            data.append(container)
+            with open(self.vulnerability.output, 'w') as outfile:
+                json.dump(data, outfile, ensure_ascii=False, indent=4)
+            
         
         else:
             for arg in function_call.args:

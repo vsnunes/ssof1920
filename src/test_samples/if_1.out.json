@@ -3,7 +3,7 @@
         "vulnerability": "simple",
         "sink": "sink",
         "source": [
-            "source"
+            "b"
         ],
         "sanitizer": []
     }
