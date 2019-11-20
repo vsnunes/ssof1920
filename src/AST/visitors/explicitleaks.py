@@ -9,7 +9,9 @@ class DetectExplicitLeaks(Visitor):
 
     def __init__(self, vulnerability):
         self.vulnerability = vulnerability
-        #######
+        self.assignTable = None
+        self.assignID = None
+        self.toDelete = True
 
     
     def visit_if(self, if_inst, sourcetable=None):
@@ -39,11 +41,14 @@ class DetectExplicitLeaks(Visitor):
 
     
     def visit_assign(self, assign_inst, sourcetable=None):
+        self.assignTable = sourcetable
+        self.assignID = assign_inst.leftValues.id
+
         #this symtable have the purpose of tracking it values are sources
         dummyStable = SourceTable()
         assign_inst.leftValues.accept(self,dummyStable)
-        
-        
+
+
         #pass dummyStable to right side
         dummyStable = SourceTable()
         #dummyStable.branches = deepcopy(sourcetable.branches)
@@ -54,26 +59,40 @@ class DetectExplicitLeaks(Visitor):
                 source = sources[0]
                 sources_id.append(source)
                 sourcetable.addSourceIfNew(source)
+                
+        if self.toDelete:
+            sourcetable.delete(assign_inst.leftValues.id)
+            self.toDelete = True
 
-        #iterate over not source tainted variables
-        #variable (left value) = [a]
-        #sources = [b,c,d]
-
-        # (a, [b], [c, d])
-        #source -> b
-        # c -> a
-        # d -> a
-
-        sourcetable.delete(assign_inst.leftValues.id)
         listOfSources = sourcetable.addVarToSources(assign_inst.leftValues.id, dummyStable.variables, sources_id)
-        print("ASSIGN: ", sourcetable)
+
+        self.assignTable = None
+        self.assignID = None
+
+        print(sourcetable)
 
     
     def visit_while(self, while_inst, sourcetable=None):
         while_inst.condition.accept(self,sourcetable)
-        while_inst.body.accept(self,sourcetable)
+
+        sourcetableBody = SourceTable()
+        sourcetableBody.branches = deepcopy(sourcetable.branches)
+        sourcetableBody.variables = deepcopy(sourcetable.variables)
+        while_inst.body.accept(self,sourcetableBody)
+
         if len(while_inst.orelse.instructions) > 0:
-            while_inst.orelse.accept(self,sourcetable)
+            sourcetableElse = SourceTable()
+            sourcetableElse.branches = deepcopy(sourcetable.branches)
+            sourcetableElse.variables = deepcopy(sourcetable.variables)
+            while_inst.orelse.accept(self,sourcetableElse)
+
+            sourcetable.branches = sourcetableBody.branches + sourcetableElse.branches
+            sourcetable.variables = sourcetableBody.variables + sourcetableElse.variables
+
+        else:
+            
+            sourcetable.branches += sourcetableBody.branches
+            sourcetable.variables += sourcetableBody.variables
 
     
     def visit_function_call(self, function_call, sourcetable=None):
@@ -81,28 +100,46 @@ class DetectExplicitLeaks(Visitor):
             sourcetable.addSource(function_call.name)
         
         if function_call.type == "sink" and function_call.tainted == True:
+
+            if self.assignTable == None:
+                tmpSource = sourcetable
+            else:
+                tmpSource = self.assignTable
+                self.toDelete = False
+
+            print(tmpSource)
+
             sourcesToReturn = []
             dummyStable = SourceTable()
             for arg in function_call.args:
                 arg.accept(self,dummyStable)
+
+            
 
             #iterate over sources
             for sources in dummyStable.branches:
                 #no key chain, just the head (source)
                 source = sources[0]
                 sourcesToReturn.append(source)
-                sourcetable.addSourceIfNew(source)
+                tmpSource.addSourceIfNew(source)
+            
+            print(tmpSource)
+
+            if self.assignTable != None:
+                listOfSources = tmpSource.addVarToSources(self.assignID, dummyStable.variables, sourcesToReturn)
 
             #iterate over not source tainted variables
             #print(dummyStable.variables)
             for taintedVar in dummyStable.variables:
-                listOfSources = sourcetable.getSources(taintedVar)
+                listOfSources = tmpSource.getSources(taintedVar)
                 sourcesToReturn += listOfSources
-        
+
+            
             #now all variables in arguments are represented as sources in dummyStable
             
             
             print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}".format(self.vulnerability.name, function_call.name, list(set(sourcesToReturn)))+'\n'+"************************")
+            self.vulnerability.output = {'Vulnerability': self.vulnerability.name, 'Sink': function_call.name, 'Source': list(set(sourcesToReturn)), 'Sanitizer': ""}
             #print(sourcetable)
         
         else:
@@ -121,6 +158,7 @@ class DetectExplicitLeaks(Visitor):
     
     def visit_expr(self, expr, sourcetable=None): 
         if expr.child is not None:
+            
             expr.child.accept(self,sourcetable)
 
     
