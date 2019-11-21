@@ -47,7 +47,7 @@ class DetectExplicitLeaks(Visitor):
     
     def visit_assign(self, assign_inst, sourcetable=None):
         self.assignTable = sourcetable
-        self.assignID = assign_inst.leftValues.id
+        self.assignID = assign_inst.leftValues
 
         #this symtable have the purpose of tracking it values are sources
         dummyStable = SourceTable()
@@ -66,10 +66,10 @@ class DetectExplicitLeaks(Visitor):
                     sources_id.append(source)
                 
         if self.toDelete:
-            sourcetable.delete(assign_inst.leftValues.id)
+            sourcetable.delete(assign_inst.leftValues)
             self.toDelete = True
 
-        listOfSources = sourcetable.addVarToSources(assign_inst.leftValues.id, dummyStable.variables, sources_id)
+        listOfSources = sourcetable.addVarToSources(assign_inst.leftValues, dummyStable.variables, sources_id)
 
         self.assignTable = None
         self.assignID = None
@@ -105,7 +105,7 @@ class DetectExplicitLeaks(Visitor):
     
     def visit_function_call(self, function_call, sourcetable=None):
         if function_call.type == "source":
-            sourcetable.addSource(function_call.name)
+            sourcetable.addSource(function_call)
         
         if function_call.type == "sink" and function_call.tainted == True:
 
@@ -144,10 +144,12 @@ class DetectExplicitLeaks(Visitor):
 
             
             #now all variables in arguments are represented as sources in dummyStable
-            
-            
-            print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}".format(self.vulnerability.name, function_call.name, list(set(sourcesToReturn)))+'\n'+"************************")
-            container = {'vulnerability': self.vulnerability.name, 'sink': function_call.name, 'source': list(set(sourcesToReturn)), 'sanitizer': list()}
+            print("VITOR: ", sourcesToReturn)
+            sourcesToReturn_ids = []
+            for node in sourcesToReturn:
+                sourcesToReturn_ids.append(node.getID())
+            print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}".format(self.vulnerability.name, function_call.name, list(set(sourcesToReturn_ids)))+'\n'+"************************")
+            container = {'vulnerability': self.vulnerability.name, 'sink': function_call.name, 'source': list(set(sourcesToReturn_ids)), 'sanitizer': list()}
 
             with open(self.vulnerability.output, "r") as jsonFile:
                 data = json.load(jsonFile)
@@ -165,10 +167,10 @@ class DetectExplicitLeaks(Visitor):
     
     def visit_variable(self, variable, sourcetable=None):
         if variable.type == "source":
-            sourcetable.addSource(variable.id)
-            sourcetable.variables.append(variable.id)
+            sourcetable.addSource(variable)
+            sourcetable.variables.append(variable)
         elif variable.tainted:
-            sourcetable.variables.append(variable.id)
+            sourcetable.variables.append(variable)
 
     
     def visit_expr(self, expr, sourcetable=None): 

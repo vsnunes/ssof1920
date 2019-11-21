@@ -22,5 +22,17 @@ class FunctionCall(Instruction):
         if self.value is not None:
             self.tainted = self.tainted or self.value.tainted
 
+    def getID(self):
+        return self.name
+
+    def __eq__(self, other):
+        if self.__class__ == other.__class__:
+            return (self.name == other.name)
+        
+        return False
+
+    def __hash__(self):
+        return hash("fcall" + self.name)
+
     def accept(self, visitor, sourcetable=None):
         visitor.visit_function_call(self,sourcetable)

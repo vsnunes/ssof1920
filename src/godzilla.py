@@ -163,7 +163,14 @@ def main(argv, arg):
     if len(tests_with_wrong) > 0:
         print("Tests with wrong answers: {}".format(tests_with_wrong))
     print(" ")
-    print("Overall score: ({}/{}) {}".format(passed, number_of_tests, (passed / number_of_tests)))
+    total = success['sources'] + wrong['sources'] + failed['sources']
+    print("Sources    score:\t({:03}/{:03})\t{:>7.2%}".format(success['sources'], total, (success['sources'] / total)))
+    total = success['sanitizers'] + wrong['sanitizers'] + failed['sanitizers']
+    print("Sanitizers score:\t({:03}/{:03})\t{:>7.2%}".format(success['sanitizers'], total, (success['sanitizers'] / total)))
+    total = success['sinks'] + wrong['sinks'] + failed['sinks']
+    print("Sinks      score:\t({:03}/{:03})\t{:>7.2%}".format(success['sinks'], total, (success['sinks'] / total)))
+    print(format("_", "_>50"))
+    print("Overall    score:\t({:03}/{:03})\t{:>7.2%}".format(passed, number_of_tests, (passed / number_of_tests)))
 
 if __name__== "__main__":
     main(sys.argv, len(sys.argv))

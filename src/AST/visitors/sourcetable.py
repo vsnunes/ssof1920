@@ -4,27 +4,25 @@ class SourceTable:
         self.branches = []
         self.variables = []
     
-    def addSource(self, id):
-        self.branches.append([id])
+    def addSource(self, node):
+        self.branches.append([node])
 
-    def addSourceIfNew(self, id):
+    def addSourceIfNew(self, node):
         for entry in self.branches:
-            if id in entry:
+            if node in entry:
                 return False
         
-        self.branches.append([id])
+        self.branches.append([node])
         return True
 
-    def getSources(self, id):
+    def getSources(self, node):
         sources = []
         for entry in self.branches:
-            #print("ENTRY: " + str(entry))
-            if id in entry and entry[0] not in sources:
+            if node in entry and entry[0] not in sources:
                 sources.append(entry[0])
-        print("getSources", sources, self)
         return sources
 
-    def addVarToSources(self, variable_id, variables, sources):
+    def addVarToSources(self, node, variables, sources):
         #Delete variable from all entries
         #Append variable to each source entry
 
@@ -35,12 +33,12 @@ class SourceTable:
         for source in sources:
             for entry in self.branches:
                 if entry[0] == source:
-                    entry.append(variable_id)
+                    entry.append(node)
 
         for var in variables:
             for entry in self.branches:
                 if var in entry[1:]:
-                    entry.append(variable_id)        
+                    entry.append(node)        
 
 
     def extractSources(self, sourcetables):
@@ -49,12 +47,12 @@ class SourceTable:
                 stable.append(sourcetables.variables[0])
             self.branches.append(stable)
 
-    def delete(self, id):
+    def delete(self, node):
         branches = []
         for entry in self.branches:
             newentry = entry[1:]
-            if id in newentry:
-                entry2 = [entry[0]] + list(filter((id).__ne__, newentry))
+            if node in newentry:
+                entry2 = [entry[0]] + list(filter((node).__ne__, newentry))
             else:
                 entry2 = entry
 
