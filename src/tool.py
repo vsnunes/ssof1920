@@ -12,6 +12,8 @@ from AST.symtable import SymTable
 from AST.functioncall import FunctionCall
 from AST.attribute import Attribute
 from vuln.vulnerability import Vulnerability
+from AST.tuple import Tuple
+from AST.list import List
 
 from AST.visitors.debugger import Debugger
 from AST.visitors.labeler import Labeler
@@ -139,6 +141,12 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                 
         elif(nodeType == "Expr"):
             return Expression(createNodes(parsed_json['value'], symtable, vuln))
+
+        elif(nodeType == "Tuple"):
+            return Tuple(createNodes(parsed_json['elts'], symtable, vuln))
+
+        elif(nodeType == "List"):
+            return List(createNodes(parsed_json['elts'], symtable, vuln))
 
         elif(nodeType == "Compare"):
             comparators = createNodes(parsed_json['comparators'], symtable, vuln)

@@ -191,3 +191,11 @@ class DetectExplicitLeaks(Visitor):
             sourcetable = SourceTable()
         for instruction in block.instructions:
             instruction.accept(self,sourcetable)
+
+    def visit_tuple(self, tuple,sourcetable=None):
+        for element in tuple.elements:
+            element.accept(self, sourcetable)
+
+    def visit_list(self, list,sourcetable=None):
+        for element in list.elements:
+            element.accept(self, sourcetable)

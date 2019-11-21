@@ -108,3 +108,23 @@ class Debugger(Visitor):
         for instruction in block.instructions:
             instruction.accept(self)
         self.outerScope()
+
+    def visit_tuple(self, tuple,sourcetable=None):
+        self.display("*Tuple")
+        self.innerScope()
+        self.display("Elements")
+        self.innerScope()
+        for element in tuple.elements:
+            element.accept(self)
+        self.outerScope()
+        self.outerScope()
+
+    def visit_list(self, list,sourcetable=None):
+        self.display("*List")
+        self.innerScope()
+        self.display("Elements")
+        self.innerScope()
+        for element in list.elements:
+            element.accept(self)
+        self.outerScope()
+        self.outerScope()

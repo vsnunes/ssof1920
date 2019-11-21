@@ -37,3 +37,11 @@ class Visitor(metaclass=ABCMeta):
     @abstractmethod
     def visit_block(self, block,sourcetable=None):
         pass
+
+    @abstractmethod
+    def visit_tuple(self, tuple,sourcetable=None):
+        pass
+
+    @abstractmethod
+    def visit_list(self, list,sourcetable=None):
+        pass
