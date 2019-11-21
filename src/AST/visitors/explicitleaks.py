@@ -16,7 +16,11 @@ class DetectExplicitLeaks(Visitor):
 
     
     def visit_if(self, if_inst, sourcetable=None):
-        if_inst.condition.accept(self,sourcetable)
+        sourcetableCondition = SourceTable()
+        sourcetableCondition.branches = deepcopy(sourcetable.branches)
+        sourcetableCondition.variables = deepcopy(sourcetable.variables)
+
+        if_inst.condition.accept(self,sourcetableCondition)
 
         sourcetableBody = SourceTable()
         sourcetableBody.branches = deepcopy(sourcetable.branches)
@@ -58,8 +62,8 @@ class DetectExplicitLeaks(Visitor):
         for sources in dummyStable.branches:
                 #no key chain, just the head (source)
                 source = sources[0]
-                sources_id.append(source)
-                sourcetable.addSourceIfNew(source)
+                if sourcetable.addSourceIfNew(source):
+                    sources_id.append(source)
                 
         if self.toDelete:
             sourcetable.delete(assign_inst.leftValues.id)
@@ -73,7 +77,11 @@ class DetectExplicitLeaks(Visitor):
 
     
     def visit_while(self, while_inst, sourcetable=None):
-        while_inst.condition.accept(self,sourcetable)
+        sourcetableCondition = SourceTable()
+        sourcetableCondition.branches = deepcopy(sourcetable.branches)
+        sourcetableCondition.variables = deepcopy(sourcetable.variables)
+
+        while_inst.condition.accept(self,sourcetableCondition)
 
         sourcetableBody = SourceTable()
         sourcetableBody.branches = deepcopy(sourcetable.branches)
@@ -113,16 +121,20 @@ class DetectExplicitLeaks(Visitor):
                 arg.accept(self,dummyStable)
 
             
-
+            #print(" before tmpSource", tmpSource)
             #iterate over sources
             for sources in dummyStable.branches:
                 #no key chain, just the head (source)
                 source = sources[0]
-                sourcesToReturn.append(source)
-                tmpSource.addSourceIfNew(source)
-            
+                if tmpSource.addSourceIfNew(source):
+                    sourcesToReturn.append(source)
+                
+            #print(" after tmpSource", tmpSource)
+            #in case of right value is function in an assigment
             if self.assignTable != None:
                 listOfSources = tmpSource.addVarToSources(self.assignID, dummyStable.variables, sourcesToReturn)
+                
+            
 
             #iterate over not source tainted variables
             #print(dummyStable.variables)

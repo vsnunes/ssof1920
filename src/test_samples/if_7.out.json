@@ -1,0 +1,11 @@
+[
+    {
+        "vulnerability": "simple",
+        "sink": "sink",
+        "source": [
+            "c",
+            "d"
+        ],
+        "sanitizer": []
+    }
+]

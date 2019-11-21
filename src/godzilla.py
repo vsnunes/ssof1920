@@ -34,8 +34,7 @@ for file in file_list:
     #print("Loading configuration: ", config)
     #print("Loading expected output: ", expected)
 
-    if not os.path.isfile(file_json):
-        os.system("astexport -p <" + file + " > " + file_json)
+    os.system("astexport -p <" + file + " > " + file_json)
 
     os.system("../tool " + file_json + " " + config +  " > /dev/null")
 

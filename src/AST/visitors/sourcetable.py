@@ -9,7 +9,7 @@ class SourceTable:
 
     def addSourceIfNew(self, id):
         for entry in self.branches:
-            if entry[0] == id:
+            if id in entry:
                 return False
         
         self.branches.append([id])
@@ -21,6 +21,7 @@ class SourceTable:
             #print("ENTRY: " + str(entry))
             if id in entry and entry[0] not in sources:
                 sources.append(entry[0])
+        print("getSources", sources, self)
         return sources
 
     def addVarToSources(self, variable_id, variables, sources):
