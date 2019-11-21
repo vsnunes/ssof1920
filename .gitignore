@@ -3,3 +3,5 @@
 __pycache__/
 *.py[cod]
 *$py.class
+test_samples/*.json
+test_samples/*.out.json

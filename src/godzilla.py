@@ -26,7 +26,7 @@ for file in file_list:
     sinks_ok = False
     filename = file[:file.index(".")]
     file_json = filename + ".json"
-    config = "simple.conf"
+    config = filename + ".conf"
     output = filename + ".out.json"
     expected = filename + ".out"
 
@@ -34,75 +34,83 @@ for file in file_list:
     #print("Loading configuration: ", config)
     #print("Loading expected output: ", expected)
 
+    if not os.path.isfile(config):
+        config = "simple.conf"
+
     os.system("astexport -p <" + file + " > " + file_json)
 
     os.system("../tool " + file_json + " " + config +  " > /dev/null")
 
-    #try:
-    if not os.path.isfile(output):
-        result = "FAILED: No output provided!"
-        generic['output'] += 1
-    else:
-        with open(output, 'r') as output_file:
-            out = output_file.read()
-            json_output = json.loads(out)
-
-        with open(expected, 'r') as expected_file:
-            exp = expected_file.read()
-            json_expected = json.loads(exp)
-
-        result = ""
-        
-        if len(json_output) != len(json_expected):
-            result += "WRONG:\n\tExpected {} vulnerability(s) but got {} vulnerability(s)\n".format(len(json_expected), len(json_output))
-            generic['vuln'] += 1
+    try:
+        if not os.path.isfile(output):
+            result = "FAILED: No output provided!"
+            generic['output'] += 1
         else:
+            with open(output, 'r') as output_file:
+                out = output_file.read()
+                json_output = json.loads(out)
 
-            for i in range(0, len(json_expected)):
-                #try:
-                if Counter(json_output[i]['source']) == Counter(json_expected[i]['source']):
-                    result += "SUCCESS: {}-Sources OK!\n".format(i)
-                    success['sources'] += 1
+            with open(expected, 'r') as expected_file:
+                exp = expected_file.read()
+                json_expected = json.loads(exp)
+
+            result = ""
+            
+            if len(json_output) != len(json_expected):
+                result += "WRONG:\n\tExpected {} vulnerability(s) but got {} vulnerability(s)\n".format(len(json_expected), len(json_output))
+                generic['vuln'] += 1
+            else:
+
+                for i in range(0, len(json_expected)):
+                    try:
+                        if Counter(json_output[i]['source']) == Counter(json_expected[i]['source']):
+                            result += "SUCCESS: {}-Sources OK!\n".format(i)
+                            success['sources'] += 1
+                            sources_ok = True
+                        else:
+                            result += "WRONG:\n\tExpected {}-Sources: {} but got {}\n".format(i, json_expected[i]['source'], json_output[i]['source'])
+                            wrong['sources'] += 1
+                            sources_ok = False
+                    except Exception:
+                        failed['sources'] += 1
+
+                    try:
+                        if Counter(json_output[i]['sanitizer']) == Counter(json_expected[i]['sanitizer']):
+                            result += "SUCCESS: {}-Sanitizers OK!\n".format(i)
+                            success['sanitizers'] += 1
+                            sanitizers_ok = True
+                        else:
+                            result += "WRONG:\n\tExpected {}-Sanitizers: {} but got {}\n".format(i, json_expected[i]['sanitizer'], json_output[i]['sanitizer'])
+                            wrong['sanitizers'] += 1
+                            sanitizers_ok = False
+                    except Exception:
+                        failed['sanitizers'] += 1
+                    
+                    try:
+                        if json_output[i]['sink'] == json_expected[i]['sink']:
+                            result += "SUCCESS: {}-Sinks OK!\n".format(i)
+                            success['sinks'] += 1
+                            sinks_ok = True
+                        else:
+                            result += "WRONG:\n\tExpected {}-Sinks: {} but got {}\n".format(i, json_expected[i]['sink'], json_output[i]['sink'])
+                            wrong['sinks'] += 1
+                            sinks_ok = False
+                        
+                    except Exception:
+                        failed['sinks'] += 1
+                if len(json_expected) == 0:
                     sources_ok = True
-                else:
-                    result += "WRONG:\n\tExpected {}-Sources: {} but got {}\n".format(i, json_expected[i]['source'], json_output[i]['source'])
-                    wrong['sources'] += 1
-                    sources_ok = False
-                #except Exception:
-                #    failed['sources'] += 1
-
-                #try:
-                if Counter(json_output[i]['sanitizer']) == Counter(json_expected[i]['sanitizer']):
-                    result += "SUCCESS: {}-Sanitizers OK!\n".format(i)
-                    success['sanitizers'] += 1
                     sanitizers_ok = True
-                else:
-                    result += "WRONG:\n\tExpected {}-Sanitizers: {} but got {}\n".format(i, json_expected[i]['sanitizer'], json_output[i]['sanitizer'])
-                    wrong['sanitizers'] += 1
-                    sanitizers_ok = False
-                #except Exception:
-                #    failed['sanitizers'] += 1
-                
-                #try:
-                if json_output[i]['sink'] == json_expected[i]['sink']:
-                    result += "SUCCESS: {}-Sinks OK!\n".format(i)
-                    success['sinks'] += 1
                     sinks_ok = True
-                else:
-                    result += "WRONG:\n\tExpected {}-Sinks: {} but got {}\n".format(i, json_expected[i]['sink'], json_output[i]['sink'])
-                    wrong['sinks'] += 1
-                    sinks_ok = False
-                
-                #except Exception:
-                #    failed['sinks'] += 1
+                    result += "SUCCESS: No vulnerabilities found OK!\n"
 
-            if sources_ok and sanitizers_ok and sinks_ok:
-                passed += 1
-    
-    print(filename + "\t\n" + result)
-    results[filename] = result
-    #except Exception:
-    #    generic['comp'] += 1
+                if sources_ok and sanitizers_ok and sinks_ok:
+                    passed += 1
+        
+        print(filename + "\t\n" + result)
+        results[filename] = result
+    except Exception:
+        generic['comp'] += 1
 
 print("============== Summary ==============")
 print("Executed {} test(s)!".format(number_of_tests))
