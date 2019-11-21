@@ -6,6 +6,7 @@ from AST.assign import Assign
 from AST.variable import Variable
 from AST.expression import Expression
 from AST.binop import BinaryOperation
+from AST.boolop import BooleanOperation
 from AST.ifelse import If
 from AST.whileelse import While
 from AST.symtable import SymTable
@@ -237,6 +238,9 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             value = createNodes(parsed_json['value'], symtable, vuln)
 
             return Attribute(attr_name, value)
+
+        elif(nodeType == "BoolOp"):
+            return BooleanOperation(createNodes(parsed_json['values'], symtable, vuln))
 
         else: #discard this instruction
             return None

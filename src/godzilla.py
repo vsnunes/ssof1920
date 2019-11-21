@@ -154,9 +154,10 @@ def main(argv, arg):
     if generic['vuln'] > 0:
         print("Different len(vulnerabilities) were given: {}".format(generic['vuln']))
     print("Passed with distintion: {}".format(passed))
-    print("Success:\n\tSources: {}\n\tSanitizers: {}\n\tSinks: {}".format(success['sources'], success['sanitizers'], success['sinks']))
-    print("Wrong:\n\tSources: {}\n\tSanitizers: {}\n\tSinks: {}".format(wrong['sources'], wrong['sanitizers'], wrong['sinks']))
-    print("Failed:\n\tSources: {}\n\tSanitizers: {}\n\tSinks: {}".format(failed['sources'], failed['sanitizers'], failed['sinks']))
+    print("Type     (Sources/Sanitizers/Sinks)")
+    print("Success: ({:03}/{:03}/{:03})".format(success['sources'], success['sanitizers'], success['sinks']))
+    print("Wrong  : ({:03}/{:03}/{:03})".format(wrong['sources'], wrong['sanitizers'], wrong['sinks']))
+    print("Failed : ({:03}/{:03}/{:03})".format(failed['sources'], failed['sanitizers'], failed['sinks']))
     print(" ")
     if len(tests_with_fails) > 0:
         print("Tests with fails: {}".format(tests_with_fails))

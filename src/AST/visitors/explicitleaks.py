@@ -201,3 +201,7 @@ class DetectExplicitLeaks(Visitor):
     def visit_list(self, list,sourcetable=None):
         for element in list.elements:
             element.accept(self, sourcetable)
+
+    def visit_boolop(self, boolop,sourcetable=None):
+        for element in boolop.elements:
+            element.accept(self, sourcetable)

@@ -128,3 +128,13 @@ class Debugger(Visitor):
             element.accept(self)
         self.outerScope()
         self.outerScope()
+
+    def visit_boolop(self, boolop,sourcetable=None):
+        self.display("*BooleanOperation")
+        self.innerScope()
+        self.display("Elements")
+        self.innerScope()
+        for element in boolop.elements:
+            element.accept(self)
+        self.outerScope()
+        self.outerScope()

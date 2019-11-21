@@ -45,3 +45,7 @@ class Visitor(metaclass=ABCMeta):
     @abstractmethod
     def visit_list(self, list,sourcetable=None):
         pass
+
+    @abstractmethod
+    def visit_boolop(self, boolop,sourcetable=None):
+        pass
