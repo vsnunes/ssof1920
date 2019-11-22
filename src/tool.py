@@ -223,6 +223,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                 fcall.type = vuln.getType(fcall.name)
                 if fcall.type == "source":
                     fcall.tainted = True
+                    fcall.sources.append(fcall)
                 return fcall
             else:
                 name = parsed_json['func']['id']
@@ -231,6 +232,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                 fcall.type = vuln.getType(fcall.name)
                 if fcall.type == "source":
                     fcall.tainted = True
+                    fcall.sources.append(fcall)
                 return fcall
 
         elif(nodeType == "Attribute"):
