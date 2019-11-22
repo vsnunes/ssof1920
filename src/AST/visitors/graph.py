@@ -249,10 +249,10 @@ class Graph():
         
         return False
 
-    def getDescendants(self, parent_element, child_element, sub_graph=None, alreadyFoundParent=False):
+    def getDescendants(self, element, sub_graph=None, alreadyFoundParent=False):
         """
         Given a parent_element searches returns a list with all child_elements whose parent is parent_element.
-        Example: parent_element = a      child_element = y
+        Example: element = a
         self
                  a
                 / \
@@ -260,43 +260,21 @@ class Graph():
               / \  |
              x   y w
         
-        Will return ['b']
+        Will return ['b', 'y', 'x']
         """
         if sub_graph is None:
             sub_graph = self.graph
 
-        descendants = []
-        alreadyFoundChild = False
+        descendents = []
 
         for el in sub_graph:
-
-            if el[0] == child_element:
-                #found the child after lets register the parent name
-                #only if is neither parent_element nor child_element.
-                #only gets middle descentands
-                descendants.append(el[0])
-                alreadyFoundChild = True
-            
-            elif el[0] == parent_element:
-                #Found the parent!
-                #But he has no children
+            if el[0] == element:
                 if el[1] != []:
-                    #Have children let search for child_element under the parent!
-                    desc, alreadyFoundChild = self.getDescendants(parent_element, child_element, el[1], True)
-                    descendants += desc
-                    if alreadyFoundChild:
-                        descendants.append(el[0])
-                        #we dont care about adding when go back to parent again
-                        alreadyFoundChild = False
-
-            elif el[1] != []:
-                desc, alreadyFoundChild = self.getDescendants(parent_element, child_element, el[1], alreadyFoundParent)
-                descendants += desc
+                    descendents += self.getDescendants(element, el[1], True)
+            elif alreadyFoundParent:
+                descendents.append(el[0])
                 
-                if alreadyFoundChild:
-                    descendants.append(el[0])
-        
-        return (descendants, alreadyFoundChild)
+                
 
     def __repr__(self):
         return "<Graph " + str(self.graph) + " >"
