@@ -18,7 +18,7 @@ from AST.list import List
 
 from AST.visitors.debugger import Debugger
 from AST.visitors.labeler import Labeler
-from AST.visitors.explicitleaks import DetectExplicitLeaks
+from AST.visitors.explicitleaks import MarkExplicitLeaks
 
 from copy import deepcopy
 
@@ -69,8 +69,10 @@ def main(argv, arg):
         #debugger = Debugger()
         #program_block.traverse(debugger)
         #detect explicit -> append to file
-        explicitleaks = DetectExplicitLeaks(vuln)
+        explicitleaks = MarkExplicitLeaks()
         program_block.traverse(explicitleaks)
+        debugger = Debugger()
+        program_block.traverse(debugger)
         #detect implicit -> append to file
     
 

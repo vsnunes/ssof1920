@@ -12,10 +12,12 @@ class FunctionCall(Instruction):
         self.args = args
         self.type = ""
         self.tainted = False
+        self.sources = []
         
         # Check if arguments are tainted
         for arg in self.args:
             self.tainted = self.tainted or arg.tainted
+            self.sources += arg.sources
 
         # If function is a method of an object also checks if the object
         # is tainted
@@ -37,5 +39,5 @@ class FunctionCall(Instruction):
     def __hash__(self):
         return hash("fcall" + self.name)
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_function_call(self,sourcetable)
+    def accept(self, visitor):
+        visitor.visit_function_call(self)

@@ -8,5 +8,5 @@ class Tuple(Instruction):
         for element in self.elements:
             self.tainted = self.tainted or element.tainted
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_tuple(self,sourcetable)
+    def accept(self, visitor):
+        visitor.visit_tuple(self)

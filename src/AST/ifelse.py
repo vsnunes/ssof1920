@@ -7,5 +7,5 @@ class If (Instruction):
         self.body = body
         self.orelse = orelse
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_if(self,sourcetable)
+    def accept(self, visitore):
+        visitor.visit_if(self)

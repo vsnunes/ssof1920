@@ -4,17 +4,25 @@ class SourceTable:
     """
     def __init__(self):
         self.table = {}
-        self.contextCounter = 0
+        self.currentContext = -1
 
     def createContext(self):
-        self.table[self.contextCounter] = []
-        self.contextCounter += 1
+        self.currentContext += 1
+        self.table[self.currentContext] = []
 
     def popContext(self):
-        self.table.pop(self.contextCounter)
-        self.contextCounter -= 1
+        self.table.pop(self.currentContext)
+        self.currentContext -= 1
 
-    def addToContext(self, context, entry):
-        self.table[context].append(entry)
+    def add(self, entry):
+        self.table[self.currentContext].append(entry)
+
+    def addIfNotExists(self, entry):
+        if entry not in self.table[self.currentContext]:
+            self.table[self.currentContext].append(entry)
+
+    def removeFromContext(self, entry):
+        if entry in self.table[self.currentContext]:
+            self.table[self.currentContext].remove(entry)
 
     

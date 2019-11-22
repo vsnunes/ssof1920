@@ -76,7 +76,7 @@ class Debugger(Visitor):
         self.outerScope()
         
     def visit_variable(self, variable):
-        self.display("*Variable Id = " + variable.id + " Type = " + variable.type + " Tainted? = " + str(variable.tainted))
+        self.display("*Variable Id = " + variable.id + " Type = " + variable.type + " Tainted? = " + str(variable.tainted) + " Sources = " + str(variable.sources))
 
 
     def visit_expr(self, expr):

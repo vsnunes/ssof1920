@@ -7,5 +7,5 @@ class Assign(Instruction):
         self.leftValues = leftValues
         self.values = values
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_assign(self,sourcetable)
+    def accept(self, visitor):
+        visitor.visit_assign(self)

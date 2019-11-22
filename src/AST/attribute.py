@@ -15,5 +15,5 @@ class Attribute(Instruction):
         else:
             self.tothetop = self.value
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_attribute(self,sourcetable)
+    def accept(self, visitor):
+        visitor.visit_attribute(self)

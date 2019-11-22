@@ -11,5 +11,5 @@ class Instruction(metaclass=ABCMeta):
         return self.__class__ == other.__class__
 
     @abstractmethod
-    def accept(self, visitor, sourcetable=None):
+    def accept(self, visitor):
         pass
