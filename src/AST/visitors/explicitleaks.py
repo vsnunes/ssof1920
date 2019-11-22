@@ -8,4 +8,4 @@ class DetectExplicitLeaks(Visitor):
     Detects explicit leaks in slices for a given vulnerability.
     """
     def __init__(self):
-        pass
+        self.sourcetable = SourceTable()
