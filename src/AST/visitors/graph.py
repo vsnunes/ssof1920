@@ -55,7 +55,7 @@ class Graph():
                 children += self.getChildren(element, el[1])
         return children
 
-    def addChild(self, element, child):
+    def addChild(self, element, child, sub_graph=None):
         """
         Adds a child to an element
         Example: element = x child = c
@@ -66,9 +66,14 @@ class Graph():
                       |
                       c
         """
-        for el in self.graph:
+        if sub_graph is None:
+            sub_graph = self.graph
+
+        for el in sub_graph:
             if el[0] == element:
                 el[1].append([child, []])
+            elif el[1] != []:
+                self.addChild(element, child, el[1])
 
     def addChildGraph(self, element, child_graph):
         """
@@ -180,6 +185,17 @@ class Graph():
     def getLeaves(self, sub_graph=None):
         """
         Returns all leaves from a graph
+        Example
+             self     
+              a
+             / \
+            x   y
+           /
+          b
+         / \
+        c   d
+
+        Will return ['c', 'd', 'y']
         """
         if sub_graph is None:
             sub_graph = self.graph
@@ -194,6 +210,93 @@ class Graph():
         
         return leaves
 
+    def isDescendant(self, parent_element, child_element, sub_graph=None, alreadyFoundParent=False):
+        """
+        Given a parent_element searches if child_element is a descendant
+        of that parent
+        Example: parent_element = a      child_element = w
+        self
+                 a
+                / \
+               b   c
+              / \  |
+             x   y w
+        
+        Will return True in this case since a is a grandson of w.
+        """
+        if sub_graph is None:
+            sub_graph = self.graph
+
+        for el in sub_graph:
+
+            if el[0] == child_element:
+                #found the child after found the parent
+                if alreadyFoundParent:
+                    return True
+                else: #found the child before found the parent
+                    return False
+            
+            elif el[0] == parent_element:
+                #Found the parent!
+                #But he has no children
+                if el[1] == []:
+                    return False
+                else:
+                    #Have children let search for child_element under the parent!
+                    return self.isDescendant(parent_element, child_element, el[1], True)
+            elif el[1] != []:
+                return self.isDescendant(parent_element, child_element, el[1], alreadyFoundParent)
+        
+        return False
+
+    def getDescendants(self, parent_element, child_element, sub_graph=None, alreadyFoundParent=False):
+        """
+        Given a parent_element searches returns a list with all child_elements whose parent is parent_element.
+        Example: parent_element = a      child_element = y
+        self
+                 a
+                / \
+               b   c
+              / \  |
+             x   y w
+        
+        Will return ['b']
+        """
+        if sub_graph is None:
+            sub_graph = self.graph
+
+        descendants = []
+        alreadyFoundChild = False
+
+        for el in sub_graph:
+
+            if el[0] == child_element:
+                #found the child after lets register the parent name
+                #only if is neither parent_element nor child_element.
+                #only gets middle descentands
+                descendants.append(el[0])
+                alreadyFoundChild = True
+            
+            elif el[0] == parent_element:
+                #Found the parent!
+                #But he has no children
+                if el[1] != []:
+                    #Have children let search for child_element under the parent!
+                    desc, alreadyFoundChild = self.getDescendants(parent_element, child_element, el[1], True)
+                    descendants += desc
+                    if alreadyFoundChild:
+                        descendants.append(el[0])
+                        #we dont care about adding when go back to parent again
+                        alreadyFoundChild = False
+
+            elif el[1] != []:
+                desc, alreadyFoundChild = self.getDescendants(parent_element, child_element, el[1], alreadyFoundParent)
+                descendants += desc
+                
+                if alreadyFoundChild:
+                    descendants.append(el[0])
+        
+        return (descendants, alreadyFoundChild)
 
     def __repr__(self):
         return "<Graph " + str(self.graph) + " >"
