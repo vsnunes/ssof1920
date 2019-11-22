@@ -1,4 +1,5 @@
 a = 2
 while a:
-    sink(a)
+    sink(a) 
     a = b
+    

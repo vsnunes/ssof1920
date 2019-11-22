@@ -77,6 +77,11 @@ class DetectExplicitLeaks(Visitor):
 
     
     def visit_while(self, while_inst, sourcetable=None):
+        #this is for the case where while need to run multiple times in order to the vulnerability to happen
+        multIterTable = SourceTable()
+        multIterTable.branches = deepcopy(sourcetable.branches)
+        multIterTable.variables = deepcopy(sourcetable.variables)
+
         sourcetableCondition = SourceTable()
         sourcetableCondition.branches = deepcopy(sourcetable.branches)
         sourcetableCondition.variables = deepcopy(sourcetable.variables)
@@ -86,7 +91,15 @@ class DetectExplicitLeaks(Visitor):
         sourcetableBody = SourceTable()
         sourcetableBody.branches = deepcopy(sourcetable.branches)
         sourcetableBody.variables = deepcopy(sourcetable.variables)
+       
+        #Continuously accepting loop body to catch hidden vulnerabilities
+        #until changes in sourcetable stop
+        #print("1 ", sourcetableBody)
         while_inst.body.accept(self,sourcetableBody)
+        #print("2 ", sourcetableBody)
+        #while_inst.body.accept(self,sourcetableBody)
+        #print("3 ", sourcetableBody)
+            
 
         if len(while_inst.orelse.instructions) > 0:
             sourcetableElse = SourceTable()
@@ -98,14 +111,18 @@ class DetectExplicitLeaks(Visitor):
             sourcetable.variables = sourcetableBody.variables + sourcetableElse.variables
 
         else:
-            
             sourcetable.branches += sourcetableBody.branches
             sourcetable.variables += sourcetableBody.variables
+
+
+        
 
     
     def visit_function_call(self, function_call, sourcetable=None):
         if function_call.type == "source":
             sourcetable.addSource(function_call)
+
+        print(sourcetable, function_call)
         
         if function_call.type == "sink" and function_call.tainted == True:
 
@@ -117,6 +134,8 @@ class DetectExplicitLeaks(Visitor):
 
             sourcesToReturn = []
             dummyStable = SourceTable()
+            dummyStable.branches = deepcopy(tmpSource.branches)
+            dummyStable.variables = deepcopy(tmpSource.variables)
             for arg in function_call.args:
                 arg.accept(self,dummyStable)
 
@@ -144,12 +163,13 @@ class DetectExplicitLeaks(Visitor):
 
             
             #now all variables in arguments are represented as sources in dummyStable
-            print("VITOR: ", sourcesToReturn)
             sourcesToReturn_ids = []
             for node in sourcesToReturn:
                 sourcesToReturn_ids.append(node.getID())
             print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}".format(self.vulnerability.name, function_call.name, list(set(sourcesToReturn_ids)))+'\n'+"************************")
             container = {'vulnerability': self.vulnerability.name, 'sink': function_call.name, 'source': list(set(sourcesToReturn_ids)), 'sanitizer': list()}
+            
+            
 
             with open(self.vulnerability.output, "r") as jsonFile:
                 data = json.load(jsonFile)
@@ -171,6 +191,7 @@ class DetectExplicitLeaks(Visitor):
             sourcetable.variables.append(variable)
         elif variable.tainted:
             sourcetable.variables.append(variable)
+
 
     
     def visit_expr(self, expr, sourcetable=None): 

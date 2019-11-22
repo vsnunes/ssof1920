@@ -31,6 +31,9 @@ class FunctionCall(Instruction):
         
         return False
 
+    def __repr__(self):
+        return "<FunctionCall name='{}' tainted={} type={}>".format(self.name, self.tainted, self.type)
+
     def __hash__(self):
         return hash("fcall" + self.name)
 
