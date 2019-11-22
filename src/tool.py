@@ -69,8 +69,8 @@ def main(argv, arg):
         #debugger = Debugger()
         #program_block.traverse(debugger)
         #detect explicit -> append to file
-        explicitleaks = MarkExplicitLeaks()
-        program_block.traverse(explicitleaks)
+        #explicitleaks = MarkExplicitLeaks()
+        #program_block.traverse(explicitleaks)
         debugger = Debugger()
         program_block.traverse(debugger)
         #detect implicit -> append to file
@@ -111,13 +111,10 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             # a.b.c = x
             if type(targets) == Attribute:
                 targets.tothetop.tainted = value.tainted
-                targets.tainted = value.tainted
-                
-                symtable.reWrite(targets.value.id, targets.value.tainted)
-            else:
-                # normal variable assign
-                targets.tainted = value.tainted
-                symtable.reWrite(targets.id, targets.tainted)
+     
+            # normal variable assign
+            targets.tainted = value.tainted
+            targets.sources = value.sources
 
             # correct left value to remove source tag
             targets.type = ""
@@ -133,12 +130,15 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 
-            clearsymtableBody = body.symtable.clear()
-            clearsymtableElse = orelse.symtable.clear(False)
+            clearsymtableBody = body.symtable
+            clearsymtableElse = orelse.symtable
 
+            #if else is empty then clearsymtableElse will be equal to symtable
             ifsymtable = clearsymtableBody + clearsymtableElse
 
             symtable.concat(ifsymtable) 
+
+            print(symtable)
 
             return If(condition, body, orelse)
                 
@@ -165,18 +165,16 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             return Expression(None, isTainted or variable.tainted)
 
         elif(nodeType == "Name"):
-            variable = Variable(parsed_json['id'])
-            tainted_last = symtable.giveMeLast(parsed_json['id'])
+            #check if id is in symtable
+            # yes -> get object
+            # no -> create
 
-            if tainted_last is not None:
-                variable.tainted = tainted_last
-            
-            symvar = symtable.getVariable(variable.id)
-            if symvar is None or symvar.type == "source":
+            variable = symtable.getVariable(parsed_json['id'])
+            if variable is None:
+                variable = Variable(parsed_json['id'])
                 variable.type = "source"
-
-            symtable.addEntry(variable)
-
+                variable.sources.append(variable)            
+                symtable.addEntry(variable)
 
             return variable
 
@@ -205,8 +203,8 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 
-            clearsymtableBody = body.symtable.clear()
-            clearsymtableElse = orelse.symtable.clear(False)
+            clearsymtableBody = body.symtable
+            clearsymtableElse = orelse.symtable
             
             whilesymtable = clearsymtableBody + clearsymtableElse
             symtable.concat(whilesymtable)

@@ -8,5 +8,10 @@ class Expression(Instruction):
         else:
             self.tainted = tainted
 
+        if self.child is None:
+            self.sources = []
+        else:
+            self.sources = self.child.sources
+
     def accept(self, visitor):
         visitor.visit_expr(self)

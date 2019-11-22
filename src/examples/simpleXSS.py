@@ -1,5 +1,12 @@
-v = x
-while e:
-    v = y
-t = Markup(v)
-t = Raw(v)
+a = k
+a = x
+b = 2
+while a:
+    a = y
+    while b:
+        b = z
+    else:
+        b = p
+a
+b
+
