@@ -96,6 +96,7 @@ class DetectExplicitLeaks(Visitor):
         #until changes in sourcetable stop
         #print("1 ", sourcetableBody)
         while_inst.body.accept(self,sourcetableBody)
+        
         #print("2 ", sourcetableBody)
         #while_inst.body.accept(self,sourcetableBody)
         #print("3 ", sourcetableBody)
