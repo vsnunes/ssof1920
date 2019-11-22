@@ -18,7 +18,7 @@ class Debugger(Visitor):
     def outerScope(self):
         self.identation -= 4
 
-    def visit_if(self, if_inst,sourcetable=None):
+    def visit_if(self, if_inst):
         self.display("*If")
         self.innerScope()
         self.display("Condition")
@@ -32,7 +32,7 @@ class Debugger(Visitor):
             if_inst.orelse.accept(self)
         self.outerScope()
 
-    def visit_assign(self, assign_inst,sourcetable=None):
+    def visit_assign(self, assign_inst):
         self.display("*Assign")
         self.innerScope()
         assign_inst.leftValues.accept(self)
@@ -40,7 +40,7 @@ class Debugger(Visitor):
         self.outerScope()
 
 
-    def visit_while(self, while_inst,sourcetable=None):
+    def visit_while(self, while_inst):
         self.display("*While")
         self.innerScope()
         self.display("Condition")
@@ -59,7 +59,7 @@ class Debugger(Visitor):
 
 
 
-    def visit_function_call(self, function_call,sourcetable=None):
+    def visit_function_call(self, function_call):
         self.display("*FunctionCall name = " + function_call.name + " Type = " + function_call.type + " Tainted? = " + str(function_call.tainted))
         self.innerScope()
         if len(function_call.args) > 0:
@@ -75,11 +75,11 @@ class Debugger(Visitor):
             self.outerScope()
         self.outerScope()
         
-    def visit_variable(self, variable,sourcetable=None):
+    def visit_variable(self, variable):
         self.display("*Variable Id = " + variable.id + " Type = " + variable.type + " Tainted? = " + str(variable.tainted))
 
 
-    def visit_expr(self, expr,sourcetable=None):
+    def visit_expr(self, expr):
         self.display("*Expr Tainted? = " + str(expr.tainted))
         if expr.child is not None:
             self.innerScope()
@@ -89,27 +89,27 @@ class Debugger(Visitor):
             self.outerScope()
             self.outerScope()
 
-    def visit_binop(self, binop,sourcetable=None):
+    def visit_binop(self, binop):
         self.display("*BinOp Tainted? = " + str(binop.tainted))
         self.innerScope()
         binop.left.accept(self)
         binop.right.accept(self)
         self.outerScope()
 
-    def visit_attribute(self, attribute,sourcetable=None):
+    def visit_attribute(self, attribute):
         self.display("*Attribute Tainted? = " + str(attribute.tainted) + " Id = " + str(attribute.id))
         self.innerScope()
         attribute.value.accept(self)
         self.outerScope()
 
-    def visit_block(self, block,sourcetable=None):
+    def visit_block(self, block):
         self.display("*Block")
         self.innerScope()
         for instruction in block.instructions:
             instruction.accept(self)
         self.outerScope()
 
-    def visit_tuple(self, tuple,sourcetable=None):
+    def visit_tuple(self, tuple):
         self.display("*Tuple")
         self.innerScope()
         self.display("Elements")
@@ -119,7 +119,7 @@ class Debugger(Visitor):
         self.outerScope()
         self.outerScope()
 
-    def visit_list(self, list,sourcetable=None):
+    def visit_list(self, list):
         self.display("*List")
         self.innerScope()
         self.display("Elements")
@@ -129,7 +129,7 @@ class Debugger(Visitor):
         self.outerScope()
         self.outerScope()
 
-    def visit_boolop(self, boolop,sourcetable=None):
+    def visit_boolop(self, boolop):
         self.display("*BooleanOperation")
         self.innerScope()
         self.display("Elements")
