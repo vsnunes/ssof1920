@@ -4,6 +4,6 @@ while indarg == "":
       arg3 = arg2
       arg2 = arg1
       arg1 = nis
-      indarg = s(indarg,1)
+      #indarg = s(indarg,1)
 q=x(query)
 

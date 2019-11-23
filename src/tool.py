@@ -189,13 +189,19 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             symtableElse = deepcopy(symtable)
             
             #Special case when vulnerabilities are only detected with multiple body loop iterations
-            #lastSymtable = None
-            #while True:
-            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
-            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
-            #    if lastSymtable == symtableBody:
-            #        break
-            #    lastSymtable = deepcopy(symtableBody)
+            lastSymtable = None
+            while True:
+                body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
+
+                if lastSymtable is not None:
+                    tmp = lastSymtable + symtableBody
+                    if tmp == lastSymtable:
+                        break
+                    else:
+                        lastSymtable = deepcopy(tmp)
+                else:
+                    lastSymtable = deepcopy(symtableBody)
+
                 
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 

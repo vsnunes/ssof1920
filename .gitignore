@@ -5,3 +5,4 @@ __pycache__/
 *$py.class
 src/test_samples/*.json
 src/test_samples/*.out.json
+src/*.out.json
