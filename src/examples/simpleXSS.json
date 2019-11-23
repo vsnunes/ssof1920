@@ -36,7 +36,7 @@
         {
             "ast_type": "Assign",
             "col_offset": 0,
-            "lineno": 2,
+            "lineno": 3,
             "targets": [
                 {
                     "ast_type": "Name",
@@ -45,51 +45,17 @@
                         "ast_type": "Store"
                     },
                     "id": "b",
-                    "lineno": 2
+                    "lineno": 3
                 }
             ],
             "value": {
-                "args": [
-                    {
-                        "args": [
-                            {
-                                "ast_type": "Name",
-                                "col_offset": 26,
-                                "ctx": {
-                                    "ast_type": "Load"
-                                },
-                                "id": "a",
-                                "lineno": 2
-                            }
-                        ],
-                        "ast_type": "Call",
-                        "col_offset": 15,
-                        "func": {
-                            "ast_type": "Name",
-                            "col_offset": 15,
-                            "ctx": {
-                                "ast_type": "Load"
-                            },
-                            "id": "sanitizer2",
-                            "lineno": 2
-                        },
-                        "keywords": [],
-                        "lineno": 2
-                    }
-                ],
-                "ast_type": "Call",
+                "ast_type": "Name",
                 "col_offset": 4,
-                "func": {
-                    "ast_type": "Name",
-                    "col_offset": 4,
-                    "ctx": {
-                        "ast_type": "Load"
-                    },
-                    "id": "sanitizer3",
-                    "lineno": 2
+                "ctx": {
+                    "ast_type": "Load"
                 },
-                "keywords": [],
-                "lineno": 2
+                "id": "y",
+                "lineno": 3
             }
         },
         {
@@ -98,7 +64,7 @@
                 {
                     "ast_type": "Assign",
                     "col_offset": 4,
-                    "lineno": 4,
+                    "lineno": 5,
                     "targets": [
                         {
                             "ast_type": "Name",
@@ -107,39 +73,22 @@
                                 "ast_type": "Store"
                             },
                             "id": "b",
-                            "lineno": 4
+                            "lineno": 5
                         }
                     ],
                     "value": {
-                        "args": [
-                            {
-                                "ast_type": "Name",
-                                "col_offset": 18,
-                                "ctx": {
-                                    "ast_type": "Load"
-                                },
-                                "id": "a",
-                                "lineno": 4
-                            }
-                        ],
-                        "ast_type": "Call",
+                        "ast_type": "Name",
                         "col_offset": 8,
-                        "func": {
-                            "ast_type": "Name",
-                            "col_offset": 8,
-                            "ctx": {
-                                "ast_type": "Load"
-                            },
-                            "id": "sanitizer",
-                            "lineno": 4
+                        "ctx": {
+                            "ast_type": "Load"
                         },
-                        "keywords": [],
-                        "lineno": 4
+                        "id": "z",
+                        "lineno": 5
                     }
                 }
             ],
             "col_offset": 0,
-            "lineno": 3,
+            "lineno": 4,
             "orelse": [],
             "test": {
                 "ast_type": "Name",
@@ -148,13 +97,13 @@
                     "ast_type": "Load"
                 },
                 "id": "a",
-                "lineno": 3
+                "lineno": 4
             }
         },
         {
             "ast_type": "Expr",
             "col_offset": 0,
-            "lineno": 6,
+            "lineno": 7,
             "value": {
                 "args": [
                     {
@@ -164,7 +113,7 @@
                             "ast_type": "Load"
                         },
                         "id": "b",
-                        "lineno": 6
+                        "lineno": 7
                     }
                 ],
                 "ast_type": "Call",
@@ -176,10 +125,10 @@
                         "ast_type": "Load"
                     },
                     "id": "sink",
-                    "lineno": 6
+                    "lineno": 7
                 },
                 "keywords": [],
-                "lineno": 6
+                "lineno": 7
             }
         }
     ]

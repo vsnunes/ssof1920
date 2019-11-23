@@ -76,6 +76,33 @@ class SymTable:
         sym.variables = result
         return sym
 
+    def inBoth(self, other):
+        result = []
+        inBothList = []
+        for variable in self.variables:
+            other_variable = other.getVariable(variable.id)
+            if other_variable is not None:
+                if variable.tainted == True:
+                    if other_variable.tainted == True:
+                        variable.sources = list(set(other_variable.sources + variable.sources))
+                        variable.sanitizers = list(set(other_variable.sanitizers + variable.sanitizers))
+                    result.append(variable)
+                    inBothList.append(variable)
+                else:
+                    result.append(other_variable)
+                    inBothList.append(other_variable)
+
+            else:
+                result.append(variable)
+
+        for variable in other.variables:
+            if variable not in result:
+                result.append(variable)
+
+        sym = SymTable()
+        sym.variables = result
+        return (sym, inBothList)
+
     def concat(self, other_symtable):
         result = []
         for var in other_symtable.variables:
@@ -83,6 +110,17 @@ class SymTable:
                 var.sources.append(var)
             if var.tainted:
                 result.append(var)
+        self.variables = result
+
+    def concatWithInBoth(self, other_symtable, inBothList):
+        result = []
+        result += inBothList
+        for var in other_symtable.variables:
+            if var not in result:
+                if var not in self.variables:
+                    var.sources.append(var)
+                if var.tainted:
+                    result.append(var)
         self.variables = result
 
     def resetPointer(self):

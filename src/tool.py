@@ -15,6 +15,7 @@ from AST.attribute import Attribute
 from vuln.vulnerability import Vulnerability
 from AST.tuple import Tuple
 from AST.list import List
+from AST.implicitstack import ImplicitStack
 
 from AST.visitors.debugger import Debugger
 from AST.visitors.explicitleaks import MarkExplicitLeaks
@@ -62,7 +63,8 @@ def main(argv, arg):
     
     
     for vuln in vuln_list:
-        program_block = createNodes(parsed_json, None, vuln)
+        implicitStack = ImplicitStack()
+        program_block = createNodes(parsed_json, None, vuln, implicitStack)
         #For each vulnerability mark each function as source, sanitizer or sink
         #print tree
         #debugger = Debugger()
@@ -76,13 +78,13 @@ def main(argv, arg):
     
 
                 
-def createNodes(parsed_json, symtable=None, vuln=None):
+def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
     #case where you have a list of instructions
     if(type(parsed_json) == list):
         instruction_nodes = []
 
         for instruction in parsed_json:
-            node = createNodes(instruction, symtable, vuln)
+            node = createNodes(instruction, symtable, vuln, implicitStack)
 
             if node is not None: #discarded instruction simply ignore
                 instruction_nodes.append(node)
@@ -95,17 +97,20 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             instructions = []
             symt = SymTable()
             for instruction in parsed_json['body']:
-                instructions.append(createNodes(instruction, symt, vuln))
+                instructions.append(createNodes(instruction, symt, vuln, implicitStack))
             return Root(Block(symt, instructions))
 
         elif(nodeType == "Assign"):
-            targets = createNodes(parsed_json['targets'][0], symtable, vuln)
-            value = createNodes(parsed_json['value'], symtable, vuln)
+            targets = createNodes(parsed_json['targets'][0], symtable, vuln, implicitStack)
+            value = createNodes(parsed_json['value'], symtable, vuln, implicitStack)
                  
             # normal variable assign
             targets.tainted = value.tainted
             targets.sources = value.sources
             targets.sanitizers = value.sanitizers
+
+            #adds implicit sources to left variables
+            #targets.sources += implicitStack.getSources()
 
             # correct left value to remove source tag
             targets.type = ""
@@ -113,36 +118,42 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             return Assign(targets, value)
 
         elif(nodeType == "If"):
-            condition = createNodes(parsed_json['test'], symtable, vuln)  
+            condition = createNodes(parsed_json['test'], symtable, vuln, implicitStack)
+
+            #implicitStack.push(condition)
             
             symtableBody = deepcopy(symtable)
             symtableElse = deepcopy(symtable)
 
-            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
-            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
+            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln, implicitStack))
+            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln, implicitStack))
 
             clearsymtableBody = body.symtable
             clearsymtableElse = orelse.symtable
 
             #if else is empty then clearsymtableElse will be equal to symtable
-            ifsymtable = clearsymtableBody + clearsymtableElse
+            #ifsymtable = clearsymtableBody + clearsymtableElse
+            ifsymtable, inBoth = clearsymtableBody.inBoth(clearsymtableElse)
 
-            symtable.concat(ifsymtable) 
+            #symtable.concat(ifsymtable)
+            symtable.concatWithInBoth(ifsymtable, inBoth)
+
+            #implicitStack.pop()
 
             return If(condition, body, orelse)
                 
         elif(nodeType == "Expr"):
-            return Expression(createNodes(parsed_json['value'], symtable, vuln))
+            return Expression(createNodes(parsed_json['value'], symtable, vuln, implicitStack))
 
         elif(nodeType == "Tuple"):
-            return Tuple(createNodes(parsed_json['elts'], symtable, vuln))
+            return Tuple(createNodes(parsed_json['elts'], symtable, vuln, implicitStack))
 
         elif(nodeType == "List"):
-            return List(createNodes(parsed_json['elts'], symtable, vuln))
+            return List(createNodes(parsed_json['elts'], symtable, vuln, implicitStack))
 
         elif(nodeType == "Compare"):
-            comparators = createNodes(parsed_json['comparators'], symtable, vuln)
-            variable = createNodes(parsed_json['left'], symtable, vuln)
+            comparators = createNodes(parsed_json['comparators'], symtable, vuln, implicitStack)
+            variable = createNodes(parsed_json['left'], symtable, vuln, implicitStack)
 
             isTainted = False
             for expression in comparators:
@@ -168,7 +179,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             return variable
 
         elif(nodeType == "Num"):
-            return createNodes(parsed_json['n'], symtable, vuln)
+            return createNodes(parsed_json['n'], symtable, vuln, implicitStack)
 
         elif(nodeType == "Str"):
             return Expression(None, False)
@@ -177,13 +188,15 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             return Expression(None, False)
 
         elif(nodeType == "BinOp"):
-            left = createNodes(parsed_json['left'], symtable, vuln)
-            right = createNodes(parsed_json['right'], symtable, vuln)
+            left = createNodes(parsed_json['left'], symtable, vuln, implicitStack)
+            right = createNodes(parsed_json['right'], symtable, vuln, implicitStack)
             return BinaryOperation(left, right)
 
         elif(nodeType == "While"):
 
-            condition = createNodes(parsed_json['test'], symtable, vuln)
+            condition = createNodes(parsed_json['test'], symtable, vuln, implicitStack)
+
+            implicitStack.push(condition)
 
             symtableBody = deepcopy(symtable)
             symtableElse = deepcopy(symtable)
@@ -191,7 +204,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             #Special case when vulnerabilities are only detected with multiple body loop iterations
             lastSymtable = None
             while True:
-                body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
+                body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln, implicitStack))
 
                 if lastSymtable is not None:
                     oldLastSymtable = deepcopy(lastSymtable)
@@ -202,7 +215,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                     lastSymtable = deepcopy(symtableBody)
 
                 
-            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
+            orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln, implicitStack))
 
             clearsymtableBody = lastSymtable
             clearsymtableElse = orelse.symtable
@@ -210,16 +223,18 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             whilesymtable = clearsymtableBody + clearsymtableElse
             symtable.concat(whilesymtable)
 
+            implicitStack.pop()
+
             return While(condition, body, orelse)
 
         elif(nodeType == "NameConstant"):
             return Expression(None, False)
 
         elif(nodeType == "Call"):
-            args = createNodes(parsed_json['args'], symtable, vuln)
+            args = createNodes(parsed_json['args'], symtable, vuln, implicitStack)
             # Special case when calling objects functions
             if parsed_json['func']['ast_type'] == "Attribute":
-                value = createNodes(parsed_json['func']['value'], symtable, vuln)
+                value = createNodes(parsed_json['func']['value'], symtable, vuln, implicitStack)
                 fcall = FunctionCall(parsed_json['func']['attr'], args, value)
                 fcall.type = vuln.getType(fcall.name)
                 
@@ -263,12 +278,12 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                 variable.sources.append(variable)            
                 symtable.addEntry(variable)
 
-            value = createNodes(parsed_json['value'], symtable, vuln)
+            value = createNodes(parsed_json['value'], symtable, vuln, implicitStack)
 
             return Attribute(variable, value)
 
         elif(nodeType == "BoolOp"):
-            return BooleanOperation(createNodes(parsed_json['values'], symtable, vuln))
+            return BooleanOperation(createNodes(parsed_json['values'], symtable, vuln, implicitStack))
 
         else: #discard this instruction
             return None

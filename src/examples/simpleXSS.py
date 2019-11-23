@@ -1,6 +1,7 @@
 a = source()
-b = sanitizer3(sanitizer2(a))
+#push a
+b = y
 if a:
-    b = sanitizer(a)
+    b = z
 
 sink(b)
