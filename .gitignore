@@ -6,3 +6,4 @@ __pycache__/
 src/test_samples/*.json
 src/test_samples/*.out.json
 src/*.out.json
+.idea/
