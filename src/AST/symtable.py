@@ -76,14 +76,14 @@ class SymTable:
         sym.variables = result
         return sym
 
-    def addWorstCase(self, other_symtable):
-        #other_symtable is father
-        for variable in self.variables:
-            if variable not in other_symtable.variables:
-                variable.sources.append(variable)
-
     def concat(self, other_symtable):
-        self.variables = other_symtable.variables
+        result = []
+        for var in other_symtable.variables:
+            if var not in self.variables:
+                var.sources.append(var)
+            if var.tainted:
+                result.append(var)
+        self.variables = result
 
     def resetPointer(self):
         self.pointer = 0

@@ -127,22 +127,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             #if else is empty then clearsymtableElse will be equal to symtable
             ifsymtable = clearsymtableBody + clearsymtableElse
 
-            """
-            WorstCase
-            a = source()
-            if True:
-                b = source2()
-                c = a + b
-
-            sink(c)
-
-            In order for c, source and source2 to be recognized as sources of c.
-            """
-            #ifsymtable.addWorstCase(symtable)
-
             symtable.concat(ifsymtable) 
-
-            print(symtable)
 
             return If(condition, body, orelse)
                 
@@ -236,7 +221,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                 fcall.tainted = True
                 fcall.sources.append(fcall)
             
-            elif fcall.type == "sink":
+            elif fcall.type == "sink" and fcall.tainted:
                 listIDs = []
                 listSanIDs = []
                 for obj in fcall.sources:
