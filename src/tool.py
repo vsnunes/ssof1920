@@ -194,18 +194,17 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                 body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
 
                 if lastSymtable is not None:
-                    tmp = lastSymtable + symtableBody
-                    if tmp == lastSymtable:
+                    oldLastSymtable = deepcopy(lastSymtable)
+                    lastSymtable + symtableBody
+                    if oldLastSymtable == lastSymtable:
                         break
-                    else:
-                        lastSymtable = deepcopy(tmp)
                 else:
                     lastSymtable = deepcopy(symtableBody)
 
                 
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 
-            clearsymtableBody = body.symtable
+            clearsymtableBody = lastSymtable
             clearsymtableElse = orelse.symtable
             
             whilesymtable = clearsymtableBody + clearsymtableElse
