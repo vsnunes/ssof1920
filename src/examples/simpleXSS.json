@@ -26,7 +26,7 @@
                     "ctx": {
                         "ast_type": "Load"
                     },
-                    "id": "get",
+                    "id": "source",
                     "lineno": 1
                 },
                 "keywords": [],
@@ -44,19 +44,36 @@
                     "ctx": {
                         "ast_type": "Store"
                     },
-                    "id": "v",
+                    "id": "b",
                     "lineno": 2
                 }
             ],
             "value": {
                 "args": [
                     {
-                        "ast_type": "Name",
-                        "col_offset": 11,
-                        "ctx": {
-                            "ast_type": "Load"
+                        "args": [
+                            {
+                                "ast_type": "Name",
+                                "col_offset": 26,
+                                "ctx": {
+                                    "ast_type": "Load"
+                                },
+                                "id": "a",
+                                "lineno": 2
+                            }
+                        ],
+                        "ast_type": "Call",
+                        "col_offset": 15,
+                        "func": {
+                            "ast_type": "Name",
+                            "col_offset": 15,
+                            "ctx": {
+                                "ast_type": "Load"
+                            },
+                            "id": "sanitizer2",
+                            "lineno": 2
                         },
-                        "id": "a",
+                        "keywords": [],
                         "lineno": 2
                     }
                 ],
@@ -68,11 +85,101 @@
                     "ctx": {
                         "ast_type": "Load"
                     },
-                    "id": "Markup",
+                    "id": "sanitizer3",
                     "lineno": 2
                 },
                 "keywords": [],
                 "lineno": 2
+            }
+        },
+        {
+            "ast_type": "If",
+            "body": [
+                {
+                    "ast_type": "Assign",
+                    "col_offset": 4,
+                    "lineno": 4,
+                    "targets": [
+                        {
+                            "ast_type": "Name",
+                            "col_offset": 4,
+                            "ctx": {
+                                "ast_type": "Store"
+                            },
+                            "id": "b",
+                            "lineno": 4
+                        }
+                    ],
+                    "value": {
+                        "args": [
+                            {
+                                "ast_type": "Name",
+                                "col_offset": 18,
+                                "ctx": {
+                                    "ast_type": "Load"
+                                },
+                                "id": "a",
+                                "lineno": 4
+                            }
+                        ],
+                        "ast_type": "Call",
+                        "col_offset": 8,
+                        "func": {
+                            "ast_type": "Name",
+                            "col_offset": 8,
+                            "ctx": {
+                                "ast_type": "Load"
+                            },
+                            "id": "sanitizer",
+                            "lineno": 4
+                        },
+                        "keywords": [],
+                        "lineno": 4
+                    }
+                }
+            ],
+            "col_offset": 0,
+            "lineno": 3,
+            "orelse": [],
+            "test": {
+                "ast_type": "Name",
+                "col_offset": 3,
+                "ctx": {
+                    "ast_type": "Load"
+                },
+                "id": "a",
+                "lineno": 3
+            }
+        },
+        {
+            "ast_type": "Expr",
+            "col_offset": 0,
+            "lineno": 6,
+            "value": {
+                "args": [
+                    {
+                        "ast_type": "Name",
+                        "col_offset": 5,
+                        "ctx": {
+                            "ast_type": "Load"
+                        },
+                        "id": "b",
+                        "lineno": 6
+                    }
+                ],
+                "ast_type": "Call",
+                "col_offset": 0,
+                "func": {
+                    "ast_type": "Name",
+                    "col_offset": 0,
+                    "ctx": {
+                        "ast_type": "Load"
+                    },
+                    "id": "sink",
+                    "lineno": 6
+                },
+                "keywords": [],
+                "lineno": 6
             }
         }
     ]

@@ -8,6 +8,7 @@ class Variable(Instruction):
         self.tainted = True
         self.type = ""
         self.sources = []
+        self.sanitizers = []
 
     def __eq__(self, other):
         if self.__class__ == other.__class__:

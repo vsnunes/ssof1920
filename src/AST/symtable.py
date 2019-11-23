@@ -61,6 +61,7 @@ class SymTable:
                 if variable.tainted == True:
                     if other_variable.tainted == True:
                         variable.sources = list(set(other_variable.sources + variable.sources))
+                        variable.sanitizers = list(set(other_variable.sanitizers + variable.sanitizers))
                     result.append(variable)
                 else:
                     result.append(other_variable)

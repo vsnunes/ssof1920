@@ -13,11 +13,13 @@ class FunctionCall(Instruction):
         self.type = ""
         self.tainted = False
         self.sources = []
+        self.sanitizers = []
         
         # Check if arguments are tainted
         for arg in self.args:
             self.tainted = self.tainted or arg.tainted
             self.sources += arg.sources
+            self.sanitizers += arg.sanitizers
 
         # If function is a method of an object also checks if the object
         # is tainted

@@ -7,6 +7,7 @@ class Attribute(Instruction):
         self.value = value
         self.tainted = self.value.tainted
         self.sources = self.value.sources
+        self.sanitizers = self.value.sanitizers
 
     def accept(self, visitor):
         visitor.visit_attribute(self)

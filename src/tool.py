@@ -105,6 +105,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             # normal variable assign
             targets.tainted = value.tainted
             targets.sources = value.sources
+            targets.sanitizers = value.sanitizers
 
             # correct left value to remove source tag
             targets.type = ""
@@ -237,19 +238,23 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             
             elif fcall.type == "sink":
                 listIDs = []
+                listSanIDs = []
                 for obj in fcall.sources:
                     listIDs.append(obj.getID())
-                print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\n************************".format(vuln.name, fcall.name, list(set(listIDs))))
-                container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(listIDs)), 'sanitizer': list()}
-                
-                    
-
+                for obj in fcall.sanitizers:
+                    listSanIDs.append(obj.getID())
+                print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizers: {}\n************************".format(vuln.name, fcall.name, list(set(listIDs)),list(set(listSanIDs))))
+                container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(listIDs)), 'sanitizer': list(set(listSanIDs))}
+            
                 with open(vuln.output, "r") as jsonFile:
                     data = json.load(jsonFile)
                 tmp = data
                 data.append(container)
                 with open(vuln.output, 'w') as outfile:
                     json.dump(data, outfile, ensure_ascii=False, indent=4)
+
+            elif fcall.type == "sanitizer":
+                fcall.sanitizers.append(fcall)
             
             return fcall
 
