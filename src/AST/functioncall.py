@@ -4,10 +4,7 @@ from attribute import Attribute
 class FunctionCall(Instruction):
     def __init__(self, name, args, value=None):
         self.value = value
-        if value is not None:
-            self.name = self.value.id
-        else:
-            self.name = name
+        self.name = name
         
         self.args = args
         self.type = ""
@@ -25,6 +22,7 @@ class FunctionCall(Instruction):
         # is tainted
         if self.value is not None:
             self.tainted = self.tainted or self.value.tainted
+            self.sources += self.value.sources
 
     def getID(self):
         return self.name

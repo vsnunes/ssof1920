@@ -195,7 +195,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
 
                 if lastSymtable is not None:
                     oldLastSymtable = deepcopy(lastSymtable)
-                    lastSymtable + symtableBody
+                    lastSymtable = lastSymtable + deepcopy(symtableBody)
                     if oldLastSymtable == lastSymtable:
                         break
                 else:
@@ -219,8 +219,8 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             args = createNodes(parsed_json['args'], symtable, vuln)
             # Special case when calling objects functions
             if parsed_json['func']['ast_type'] == "Attribute":
-                value = createNodes(parsed_json['func'], symtable, vuln)
-                fcall = FunctionCall(None, args, value)
+                value = createNodes(parsed_json['func']['value'], symtable, vuln)
+                fcall = FunctionCall(parsed_json['func']['attr'], args, value)
                 fcall.type = vuln.getType(fcall.name)
                 
             else:
@@ -256,10 +256,16 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             return fcall
 
         elif(nodeType == "Attribute"):
-            attr_name = parsed_json['attr']
+            variable = symtable.getVariable(parsed_json['attr'])
+            if variable is None:
+                variable = Variable(parsed_json['attr'])
+                variable.type = "source"
+                variable.sources.append(variable)            
+                symtable.addEntry(variable)
+
             value = createNodes(parsed_json['value'], symtable, vuln)
 
-            return Attribute(attr_name, value)
+            return Attribute(variable, value)
 
         elif(nodeType == "BoolOp"):
             return BooleanOperation(createNodes(parsed_json['values'], symtable, vuln))
