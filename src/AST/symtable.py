@@ -36,22 +36,22 @@ class SymTable:
         Returns the symtable with only the last change of every variable
         discarding intermediate states.
         """
-        self.cleaned = []
-        self.alreadyReached = []
-        for i in range(len(self.variables) - 1, -1, -1):
+        #self.cleaned = []
+        #self.alreadyReached = []
+        #for i in range(len(self.variables) - 1, -1, -1):
             # Only merge if tainted values since we want worst case scenario
-            if onlyTainted:
-                if (self.variables[i].id not in self.alreadyReached) and self.variables[i].tainted:
-                    self.alreadyReached.append(self.variables[i].id)
-                    self.cleaned.append(self.variables[i])
-            else:
-                if (self.variables[i].id not in self.alreadyReached):
-                    self.alreadyReached.append(self.variables[i].id)
-                    self.cleaned.append(self.variables[i])
+        #    if onlyTainted:
+        #        if (self.variables[i].id not in self.alreadyReached) and self.variables[i].tainted:
+        #            self.alreadyReached.append(self.variables[i].id)
+        #            self.cleaned.append(self.variables[i])
+        #    else:
+        #        if (self.variables[i].id not in self.alreadyReached):
+        #            self.alreadyReached.append(self.variables[i].id)
+        #            self.cleaned.append(self.variables[i])
 
-        sym = SymTable()
-        sym.variables = self.cleaned
-        return sym
+        #sym = SymTable()
+        #sym.variables = self.cleaned
+        #return sym
 
     def __add__(self, other):
         result = []
@@ -59,6 +59,9 @@ class SymTable:
             other_variable = other.getVariable(variable.id)
             if other_variable is not None:
                 if variable.tainted == True:
+                    if other_variable.tainted == True:
+                        variable.sources = list(set(other_variable.sources + variable.sources))
+                        variable.sanitizers = list(set(other_variable.sanitizers + variable.sanitizers))
                     result.append(variable)
                 else:
                     result.append(other_variable)
@@ -74,7 +77,13 @@ class SymTable:
         return sym
 
     def concat(self, other_symtable):
-        self.variables += other_symtable.variables
+        result = []
+        for var in other_symtable.variables:
+            if var not in self.variables:
+                var.sources.append(var)
+            if var.tainted:
+                result.append(var)
+        self.variables = result
 
     def resetPointer(self):
         self.pointer = 0
@@ -85,10 +94,22 @@ class SymTable:
     def outerContext(self):
         self.context -= 1
 
+    def __eq__(self, other):
+        if self.__class__ == other.__class__:
+            if len(self.variables) != len(other.variables):
+                return False
+            for var in self.variables:
+                otherVar = other.getVariable(var.getID())
+                if var.sources != otherVar.sources or var.sanitizers != otherVar.sanitizers or var.tainted != otherVar.tainted:
+                    return False
+            return True
+        else:
+            return False
+
     def __str__(self):
         s = "< "
         for var in self.variables:
-            s += var.id + " "
+            s += str(var) + " "
         return s + ">"
 
     #something missing for checkings sinks

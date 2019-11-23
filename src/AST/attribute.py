@@ -2,18 +2,16 @@ from instruction import Instruction
 from variable import Variable
 
 class Attribute(Instruction):
-    def __init__(self, id, value):
-        self.id = id
+    def __init__(self, attr, value):
+        self.attr = attr
         self.value = value
-        self.tainted = self.value.tainted
+        self.tainted = self.value.tainted or self.attr.tainted
+        self.sanitizers = self.value.sanitizers
 
-        self.tothetop = None
-        
+        #self.value.sources += self.attr.sources
+        #self.value.tainted = self.attr.tainted
+        #self.sources = self.value.sources
+        self.sources = self.value.sources + self.attr.sources
 
-        if type(self.value) == Attribute:
-            self.tothetop = self.value.tothetop
-        else:
-            self.tothetop = self.value
-
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_attribute(self,sourcetable)
+    def accept(self, visitor):
+        visitor.visit_attribute(self)

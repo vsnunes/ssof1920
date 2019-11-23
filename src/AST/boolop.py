@@ -9,5 +9,5 @@ class BooleanOperation(Instruction):
         for element in self.elements:
             self.tainted = self.tainted or element.tainted
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_boolop(self,sourcetable)
+    def accept(self, visitor):
+        visitor.visit_boolop(self)

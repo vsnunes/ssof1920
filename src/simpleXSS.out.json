@@ -1,20 +1,14 @@
 [
     {
-        "vulnerability": "XSS",
-        "sink": "Markup",
+        "vulnerability": "simple",
+        "sink": "sink",
         "source": [
-            "x",
-            "y"
+            "source"
         ],
-        "sanitizer": []
-    },
-    {
-        "vulnerability": "XSS",
-        "sink": "Raw",
-        "source": [
-            "x",
-            "y"
-        ],
-        "sanitizer": []
+        "sanitizer": [
+            "sanitizer3",
+            "sanitizer2",
+            "sanitizer"
+        ]
     }
 ]

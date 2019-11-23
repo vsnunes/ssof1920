@@ -1,5 +1,6 @@
-v = x
-while e:
-    v = y
-t = Markup(v)
-t = Raw(v)
+a = source()
+b = sanitizer3(sanitizer2(a))
+if a:
+    b = sanitizer(a)
+
+sink(b)

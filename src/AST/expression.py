@@ -8,5 +8,12 @@ class Expression(Instruction):
         else:
             self.tainted = tainted
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_expr(self,sourcetable)
+        if self.child is None:
+            self.sources = []
+            self.sanitizers = []
+        else:
+            self.sources = self.child.sources
+            self.sanitizers = self.child.sanitizers
+
+    def accept(self, visitor):
+        visitor.visit_expr(self)

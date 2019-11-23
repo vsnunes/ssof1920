@@ -7,6 +7,8 @@ class Variable(Instruction):
         self.id = id
         self.tainted = True
         self.type = ""
+        self.sources = []
+        self.sanitizers = []
 
     def __eq__(self, other):
         if self.__class__ == other.__class__:
@@ -23,5 +25,5 @@ class Variable(Instruction):
     def getID(self):
         return self.id
 
-    def accept(self, visitor, sourcetable=None):
-        visitor.visit_variable(self, sourcetable)
+    def accept(self, visitor):
+        visitor.visit_variable(self)

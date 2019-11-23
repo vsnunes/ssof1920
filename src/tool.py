@@ -17,8 +17,7 @@ from AST.tuple import Tuple
 from AST.list import List
 
 from AST.visitors.debugger import Debugger
-from AST.visitors.labeler import Labeler
-from AST.visitors.explicitleaks import DetectExplicitLeaks
+from AST.visitors.explicitleaks import MarkExplicitLeaks
 
 from copy import deepcopy
 
@@ -69,8 +68,10 @@ def main(argv, arg):
         #debugger = Debugger()
         #program_block.traverse(debugger)
         #detect explicit -> append to file
-        explicitleaks = DetectExplicitLeaks(vuln)
-        program_block.traverse(explicitleaks)
+        #explicitleaks = MarkExplicitLeaks()
+        #program_block.traverse(explicitleaks)
+        #debugger = Debugger()
+        #program_block.traverse(debugger)
         #detect implicit -> append to file
     
 
@@ -100,22 +101,11 @@ def createNodes(parsed_json, symtable=None, vuln=None):
         elif(nodeType == "Assign"):
             targets = createNodes(parsed_json['targets'][0], symtable, vuln)
             value = createNodes(parsed_json['value'], symtable, vuln)
-            
-            # If target is atribute then mark as tainted/untainted the object
-            # not the function.
-            # a.b = x
-            # targets.id will return b
-            # targets.value.id will return a
-            # a.b.c = x
-            if type(targets) == Attribute:
-                targets.tothetop.tainted = value.tainted
-                targets.tainted = value.tainted
-                
-                symtable.reWrite(targets.value.id, targets.value.tainted)
-            else:
-                # normal variable assign
-                targets.tainted = value.tainted
-                symtable.reWrite(targets.id, targets.tainted)
+                 
+            # normal variable assign
+            targets.tainted = value.tainted
+            targets.sources = value.sources
+            targets.sanitizers = value.sanitizers
 
             # correct left value to remove source tag
             targets.type = ""
@@ -131,9 +121,10 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 
-            clearsymtableBody = body.symtable.clear()
-            clearsymtableElse = orelse.symtable.clear(False)
+            clearsymtableBody = body.symtable
+            clearsymtableElse = orelse.symtable
 
+            #if else is empty then clearsymtableElse will be equal to symtable
             ifsymtable = clearsymtableBody + clearsymtableElse
 
             symtable.concat(ifsymtable) 
@@ -163,18 +154,16 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             return Expression(None, isTainted or variable.tainted)
 
         elif(nodeType == "Name"):
-            variable = Variable(parsed_json['id'])
-            tainted_last = symtable.giveMeLast(parsed_json['id'])
+            #check if id is in symtable
+            # yes -> get object
+            # no -> create
 
-            if tainted_last is not None:
-                variable.tainted = tainted_last
-            
-            symvar = symtable.getVariable(variable.id)
-            if symvar is None or symvar.type == "source":
+            variable = symtable.getVariable(parsed_json['id'])
+            if variable is None:
+                variable = Variable(parsed_json['id'])
                 variable.type = "source"
-
-            symtable.addEntry(variable)
-
+                variable.sources.append(variable)            
+                symtable.addEntry(variable)
 
             return variable
 
@@ -198,13 +187,25 @@ def createNodes(parsed_json, symtable=None, vuln=None):
 
             symtableBody = deepcopy(symtable)
             symtableElse = deepcopy(symtable)
-
-            body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
             
+            #Special case when vulnerabilities are only detected with multiple body loop iterations
+            lastSymtable = None
+            while True:
+                body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln))
+
+                if lastSymtable is not None:
+                    oldLastSymtable = deepcopy(lastSymtable)
+                    lastSymtable = lastSymtable + deepcopy(symtableBody)
+                    if oldLastSymtable == lastSymtable:
+                        break
+                else:
+                    lastSymtable = deepcopy(symtableBody)
+
+                
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln))
 
-            clearsymtableBody = body.symtable.clear()
-            clearsymtableElse = orelse.symtable.clear(False)
+            clearsymtableBody = lastSymtable
+            clearsymtableElse = orelse.symtable
             
             whilesymtable = clearsymtableBody + clearsymtableElse
             symtable.concat(whilesymtable)
@@ -218,26 +219,53 @@ def createNodes(parsed_json, symtable=None, vuln=None):
             args = createNodes(parsed_json['args'], symtable, vuln)
             # Special case when calling objects functions
             if parsed_json['func']['ast_type'] == "Attribute":
-                value = createNodes(parsed_json['func'], symtable, vuln)
-                fcall = FunctionCall(None, args, value)
+                value = createNodes(parsed_json['func']['value'], symtable, vuln)
+                fcall = FunctionCall(parsed_json['func']['attr'], args, value)
                 fcall.type = vuln.getType(fcall.name)
-                if fcall.type == "source":
-                    fcall.tainted = True
-                return fcall
+                
             else:
                 name = parsed_json['func']['id']
 
                 fcall = FunctionCall(name, args)
                 fcall.type = vuln.getType(fcall.name)
-                if fcall.type == "source":
-                    fcall.tainted = True
-                return fcall
+
+            if fcall.type == "source":
+                fcall.tainted = True
+                fcall.sources.append(fcall)
+            
+            elif fcall.type == "sink" and fcall.tainted:
+                listIDs = []
+                listSanIDs = []
+                for obj in fcall.sources:
+                    listIDs.append(obj.getID())
+                for obj in fcall.sanitizers:
+                    listSanIDs.append(obj.getID())
+                print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizers: {}\n************************".format(vuln.name, fcall.name, list(set(listIDs)),list(set(listSanIDs))))
+                container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(listIDs)), 'sanitizer': list(set(listSanIDs))}
+            
+                with open(vuln.output, "r") as jsonFile:
+                    data = json.load(jsonFile)
+                tmp = data
+                data.append(container)
+                with open(vuln.output, 'w') as outfile:
+                    json.dump(data, outfile, ensure_ascii=False, indent=4)
+
+            elif fcall.type == "sanitizer":
+                fcall.sanitizers.append(fcall)
+            
+            return fcall
 
         elif(nodeType == "Attribute"):
-            attr_name = parsed_json['attr']
+            variable = symtable.getVariable(parsed_json['attr'])
+            if variable is None:
+                variable = Variable(parsed_json['attr'])
+                variable.type = "source"
+                variable.sources.append(variable)            
+                symtable.addEntry(variable)
+
             value = createNodes(parsed_json['value'], symtable, vuln)
 
-            return Attribute(attr_name, value)
+            return Attribute(variable, value)
 
         elif(nodeType == "BoolOp"):
             return BooleanOperation(createNodes(parsed_json['values'], symtable, vuln))
