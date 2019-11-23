@@ -132,10 +132,8 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
             clearsymtableElse = orelse.symtable
 
             #if else is empty then clearsymtableElse will be equal to symtable
-            #ifsymtable = clearsymtableBody + clearsymtableElse
             ifsymtable, inBoth = clearsymtableBody.inBoth(clearsymtableElse)
 
-            #symtable.concat(ifsymtable)
             symtable.concatWithInBoth(ifsymtable, inBoth)
 
             #implicitStack.pop()
@@ -219,9 +217,10 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
             clearsymtableBody = lastSymtable
             clearsymtableElse = orelse.symtable
-            
-            whilesymtable = clearsymtableBody + clearsymtableElse
-            symtable.concat(whilesymtable)
+
+            whilesymtable, inBoth = clearsymtableBody.inBoth(clearsymtableElse)
+
+            symtable.concatWithInBoth(whilesymtable, inBoth)
 
             implicitStack.pop()
 
