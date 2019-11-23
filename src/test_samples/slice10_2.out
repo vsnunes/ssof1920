@@ -1,0 +1,6 @@
+[
+    {"vulnerability":"slice10_2",
+    "source":["query", "a"],
+    "sanitizer":[],
+    "sink":"x"}
+]
