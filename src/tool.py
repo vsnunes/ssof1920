@@ -17,7 +17,6 @@ from AST.tuple import Tuple
 from AST.list import List
 
 from AST.visitors.debugger import Debugger
-from AST.visitors.labeler import Labeler
 from AST.visitors.explicitleaks import MarkExplicitLeaks
 
 from copy import deepcopy
@@ -71,8 +70,8 @@ def main(argv, arg):
         #detect explicit -> append to file
         #explicitleaks = MarkExplicitLeaks()
         #program_block.traverse(explicitleaks)
-        debugger = Debugger()
-        program_block.traverse(debugger)
+        #debugger = Debugger()
+        #program_block.traverse(debugger)
         #detect implicit -> append to file
     
 
@@ -102,16 +101,7 @@ def createNodes(parsed_json, symtable=None, vuln=None):
         elif(nodeType == "Assign"):
             targets = createNodes(parsed_json['targets'][0], symtable, vuln)
             value = createNodes(parsed_json['value'], symtable, vuln)
-            
-            # If target is atribute then mark as tainted/untainted the object
-            # not the function.
-            # a.b = x
-            # targets.id will return b
-            # targets.value.id will return a
-            # a.b.c = x
-            if type(targets) == Attribute:
-                targets.tothetop.tainted = value.tainted
-     
+                 
             # normal variable assign
             targets.tainted = value.tainted
             targets.sources = value.sources
@@ -135,6 +125,19 @@ def createNodes(parsed_json, symtable=None, vuln=None):
 
             #if else is empty then clearsymtableElse will be equal to symtable
             ifsymtable = clearsymtableBody + clearsymtableElse
+
+            """
+            WorstCase
+            a = source()
+            if True:
+                b = source2()
+                c = a + b
+
+            sink(c)
+
+            In order for c, source and source2 to be recognized as sources of c.
+            """
+            #ifsymtable.addWorstCase(symtable)
 
             symtable.concat(ifsymtable) 
 
@@ -221,19 +224,34 @@ def createNodes(parsed_json, symtable=None, vuln=None):
                 value = createNodes(parsed_json['func'], symtable, vuln)
                 fcall = FunctionCall(None, args, value)
                 fcall.type = vuln.getType(fcall.name)
-                if fcall.type == "source":
-                    fcall.tainted = True
-                    fcall.sources.append(fcall)
-                return fcall
+                
             else:
                 name = parsed_json['func']['id']
 
                 fcall = FunctionCall(name, args)
                 fcall.type = vuln.getType(fcall.name)
-                if fcall.type == "source":
-                    fcall.tainted = True
-                    fcall.sources.append(fcall)
-                return fcall
+
+            if fcall.type == "source":
+                fcall.tainted = True
+                fcall.sources.append(fcall)
+            
+            elif fcall.type == "sink":
+                listIDs = []
+                for obj in fcall.sources:
+                    listIDs.append(obj.getID())
+                print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\n************************".format(vuln.name, fcall.name, list(set(listIDs))))
+                container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(listIDs)), 'sanitizer': list()}
+                
+                    
+
+                with open(vuln.output, "r") as jsonFile:
+                    data = json.load(jsonFile)
+                tmp = data
+                data.append(container)
+                with open(vuln.output, 'w') as outfile:
+                    json.dump(data, outfile, ensure_ascii=False, indent=4)
+            
+            return fcall
 
         elif(nodeType == "Attribute"):
             attr_name = parsed_json['attr']

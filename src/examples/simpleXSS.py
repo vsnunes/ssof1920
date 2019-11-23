@@ -1,2 +1,2 @@
-a = miguel.get(k)
-a
+a = get()
+v = Markup(a)

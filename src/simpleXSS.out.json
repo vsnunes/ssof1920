@@ -1,1 +1,10 @@
-[]
+[
+    {
+        "vulnerability": "XSS",
+        "sink": "Markup",
+        "source": [
+            "get"
+        ],
+        "sanitizer": []
+    }
+]

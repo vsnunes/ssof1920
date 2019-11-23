@@ -1,2 +1,2 @@
-a = x
+a = source()
 sink(a)

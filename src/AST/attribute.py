@@ -6,14 +6,7 @@ class Attribute(Instruction):
         self.id = id
         self.value = value
         self.tainted = self.value.tainted
-
-        self.tothetop = None
-        
-
-        if type(self.value) == Attribute:
-            self.tothetop = self.value.tothetop
-        else:
-            self.tothetop = self.value
+        self.sources = self.value.sources
 
     def accept(self, visitor):
         visitor.visit_attribute(self)

@@ -1,5 +1,4 @@
 from visitor import Visitor
-from sourcetable import SourceTable
 
 class MarkExplicitLeaks(Visitor):
     """
@@ -22,7 +21,18 @@ class MarkExplicitLeaks(Visitor):
         pass
     
     def visit_function_call(self, function_call):
-        pass
+        
+        #print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}".format(self.vulnerability.name, function_call.name, list(set(sourcesToReturn_ids)))+'\n'+"************************")
+        #container = {'vulnerability': self.vulnerability.name, 'sink': function_call.name, 'source': list(set(sourcesToReturn_ids)), 'sanitizer': list()}
+        pass   
+            
+
+        #with open(self.vulnerability.output, "r") as jsonFile:
+        #    data = json.load(jsonFile)
+        #tmp = data
+        #data.append(container)
+        #with open(self.vulnerability.output, 'w') as outfile:
+        #    json.dump(data, outfile, ensure_ascii=False, indent=4)
     
     def visit_variable(self, variable):
         pass
