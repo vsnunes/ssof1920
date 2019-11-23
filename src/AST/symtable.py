@@ -94,6 +94,18 @@ class SymTable:
     def outerContext(self):
         self.context -= 1
 
+    def __eq__(self, other):
+        if self.__class__ == other.__class__:
+            if len(self.variables) != len(other.variables):
+                return False
+            for var in self.variables:
+                otherVar = other.getVariable(var.getID())
+                if var.sources != otherVar.sources or var.sanitizers != otherVar.sanitizers or var.tainted != otherVar.tainted:
+                    return False
+            return True
+        else:
+            return False
+
     def __str__(self):
         s = "< "
         for var in self.variables:
