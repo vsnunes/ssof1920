@@ -12,21 +12,31 @@
                     "ctx": {
                         "ast_type": "Store"
                     },
-                    "id": "a",
+                    "id": "uname",
                     "lineno": 1
                 }
             ],
             "value": {
-                "args": [],
+                "args": [
+                    {
+                        "ast_type": "Name",
+                        "col_offset": 23,
+                        "ctx": {
+                            "ast_type": "Load"
+                        },
+                        "id": "request",
+                        "lineno": 1
+                    }
+                ],
                 "ast_type": "Call",
-                "col_offset": 4,
+                "col_offset": 8,
                 "func": {
                     "ast_type": "Name",
-                    "col_offset": 4,
+                    "col_offset": 8,
                     "ctx": {
                         "ast_type": "Load"
                     },
-                    "id": "source",
+                    "id": "retrieve_uname",
                     "lineno": 1
                 },
                 "keywords": [],
@@ -44,88 +54,58 @@
                     "ctx": {
                         "ast_type": "Store"
                     },
-                    "id": "b",
+                    "id": "q",
                     "lineno": 2
                 }
             ],
             "value": {
-                "ast_type": "Name",
-                "col_offset": 4,
-                "ctx": {
-                    "ast_type": "Load"
-                },
-                "id": "x",
-                "lineno": 2
-            }
-        },
-        {
-            "ast_type": "While",
-            "body": [
-                {
-                    "ast_type": "Assign",
-                    "col_offset": 4,
-                    "lineno": 4,
-                    "targets": [
-                        {
-                            "ast_type": "Name",
-                            "col_offset": 4,
-                            "ctx": {
-                                "ast_type": "Store"
-                            },
-                            "id": "b",
-                            "lineno": 4
-                        }
-                    ],
-                    "value": {
-                        "ast_type": "Str",
-                        "col_offset": 8,
-                        "lineno": 4,
-                        "s": "ola"
-                    }
-                }
-            ],
-            "col_offset": 0,
-            "lineno": 3,
-            "orelse": [],
-            "test": {
-                "ast_type": "Name",
-                "col_offset": 6,
-                "ctx": {
-                    "ast_type": "Load"
-                },
-                "id": "a",
-                "lineno": 3
-            }
-        },
-        {
-            "ast_type": "Expr",
-            "col_offset": 0,
-            "lineno": 6,
-            "value": {
                 "args": [
                     {
-                        "ast_type": "Name",
-                        "col_offset": 5,
-                        "ctx": {
-                            "ast_type": "Load"
+                        "ast_type": "BinOp",
+                        "col_offset": 19,
+                        "left": {
+                            "ast_type": "Str",
+                            "col_offset": 19,
+                            "lineno": 2,
+                            "s": "SELECT pass FROM users WHERE user='%s'"
                         },
-                        "id": "b",
-                        "lineno": 6
+                        "lineno": 2,
+                        "op": {
+                            "ast_type": "Mod"
+                        },
+                        "right": {
+                            "ast_type": "Name",
+                            "col_offset": 62,
+                            "ctx": {
+                                "ast_type": "Load"
+                            },
+                            "id": "uname",
+                            "lineno": 2
+                        }
                     }
                 ],
                 "ast_type": "Call",
-                "col_offset": 0,
+                "col_offset": 4,
                 "func": {
-                    "ast_type": "Name",
-                    "col_offset": 0,
+                    "ast_type": "Attribute",
+                    "attr": "execute",
+                    "col_offset": 4,
                     "ctx": {
                         "ast_type": "Load"
                     },
-                    "id": "sink",
-                    "lineno": 6
+                    "lineno": 2,
+                    "value": {
+                        "ast_type": "Name",
+                        "col_offset": 4,
+                        "ctx": {
+                            "ast_type": "Load"
+                        },
+                        "id": "cursor",
+                        "lineno": 2
+                    }
                 },
                 "keywords": [],
-                "lineno": 6
+                "lineno": 2
             }
         }
     ]

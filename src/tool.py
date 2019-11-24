@@ -48,7 +48,7 @@ def main(argv, arg):
 
     parsed_vulnerabilities = json.loads(json_vulnPatterns)
 
-    output_name = ntpath.basename(argv[1]).split('.json')[0] + ".out.json"
+    output_name = ntpath.basename(argv[1]).split('.json')[0] + ".output.json"
 
     data = []
     with open(output_name, 'w') as outfile:
@@ -191,10 +191,6 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
             return BinaryOperation(left, right)
 
         elif(nodeType == "While"):
-
-
-
-
 
             symtableBody = deepcopy(symtable)
             symtableElse = deepcopy(symtable)

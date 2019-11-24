@@ -57,7 +57,7 @@ def main(argv, arg):
         filename = file[:file.index(".")]
         file_json = filename + ".json"
         config = filename + ".conf"
-        output = filename + ".out.json"
+        output = filename + ".output.json"
         expected = filename + ".out"
         results[filename] = ""
         #print("Preparing for testing: ", file)
