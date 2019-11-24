@@ -7,6 +7,7 @@ from AST.variable import Variable
 from AST.expression import Expression
 from AST.binop import BinaryOperation
 from AST.boolop import BooleanOperation
+from AST.compare import Compare
 from AST.ifelse import If
 from AST.whileelse import While
 from AST.symtable import SymTable
@@ -110,7 +111,12 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
             targets.sanitizers = value.sanitizers
 
             #adds implicit sources to left variables
-            #targets.sources += implicitStack.getSources()
+            srcs = implicitStack.getSources()
+            targets.sources += srcs
+            targets.sanitizers += implicitStack.getSanitizers()
+
+            if len(srcs) > 0:
+                targets.tainted = True
 
             # correct left value to remove source tag
             targets.type = ""
@@ -120,7 +126,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
         elif(nodeType == "If"):
             condition = createNodes(parsed_json['test'], symtable, vuln, implicitStack)
 
-            #implicitStack.push(condition)
+            implicitStack.push(condition)
             
             symtableBody = deepcopy(symtable)
             symtableElse = deepcopy(symtable)
@@ -136,7 +142,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
             symtable.concatWithInBoth(ifsymtable, inBoth)
 
-            #implicitStack.pop()
+            implicitStack.pop()
 
             return If(condition, body, orelse)
                 
@@ -151,16 +157,10 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
         elif(nodeType == "Compare"):
             comparators = createNodes(parsed_json['comparators'], symtable, vuln, implicitStack)
-            variable = createNodes(parsed_json['left'], symtable, vuln, implicitStack)
+            left = createNodes(parsed_json['left'], symtable, vuln, implicitStack)
 
-            isTainted = False
-            for expression in comparators:
-                if(expression.tainted):
-                    isTainted = True
-                    break
-                    
             # if the variable is tainted or the expression then the result is tainted
-            return Expression(None, isTainted or variable.tainted)
+            return Compare(left, comparators)
 
         elif(nodeType == "Name"):
             #check if id is in symtable
@@ -212,7 +212,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                 else:
                     lastSymtable = deepcopy(symtableBody)
 
-                
+
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln, implicitStack))
 
             clearsymtableBody = lastSymtable

@@ -49,3 +49,7 @@ class Visitor(metaclass=ABCMeta):
     @abstractmethod
     def visit_boolop(self, boolop):
         pass
+
+    @abstractmethod
+    def visit_compare(self, compare):
+        pass

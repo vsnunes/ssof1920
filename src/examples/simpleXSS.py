@@ -1,7 +1,6 @@
 a = source()
-#push a
-b = y
+b = 2
 if a:
-    b = z
+    b = "ola"
 
 sink(b)

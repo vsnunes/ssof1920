@@ -36,7 +36,7 @@
         {
             "ast_type": "Assign",
             "col_offset": 0,
-            "lineno": 3,
+            "lineno": 2,
             "targets": [
                 {
                     "ast_type": "Name",
@@ -45,17 +45,18 @@
                         "ast_type": "Store"
                     },
                     "id": "b",
-                    "lineno": 3
+                    "lineno": 2
                 }
             ],
             "value": {
-                "ast_type": "Name",
+                "ast_type": "Num",
                 "col_offset": 4,
-                "ctx": {
-                    "ast_type": "Load"
-                },
-                "id": "y",
-                "lineno": 3
+                "lineno": 2,
+                "n": {
+                    "ast_type": "int",
+                    "n": 2,
+                    "n_str": "2"
+                }
             }
         },
         {
@@ -64,7 +65,7 @@
                 {
                     "ast_type": "Assign",
                     "col_offset": 4,
-                    "lineno": 5,
+                    "lineno": 4,
                     "targets": [
                         {
                             "ast_type": "Name",
@@ -73,22 +74,19 @@
                                 "ast_type": "Store"
                             },
                             "id": "b",
-                            "lineno": 5
+                            "lineno": 4
                         }
                     ],
                     "value": {
-                        "ast_type": "Name",
+                        "ast_type": "Str",
                         "col_offset": 8,
-                        "ctx": {
-                            "ast_type": "Load"
-                        },
-                        "id": "z",
-                        "lineno": 5
+                        "lineno": 4,
+                        "s": "ola"
                     }
                 }
             ],
             "col_offset": 0,
-            "lineno": 4,
+            "lineno": 3,
             "orelse": [],
             "test": {
                 "ast_type": "Name",
@@ -97,13 +95,13 @@
                     "ast_type": "Load"
                 },
                 "id": "a",
-                "lineno": 4
+                "lineno": 3
             }
         },
         {
             "ast_type": "Expr",
             "col_offset": 0,
-            "lineno": 7,
+            "lineno": 6,
             "value": {
                 "args": [
                     {
@@ -113,7 +111,7 @@
                             "ast_type": "Load"
                         },
                         "id": "b",
-                        "lineno": 7
+                        "lineno": 6
                     }
                 ],
                 "ast_type": "Call",
@@ -125,10 +123,10 @@
                         "ast_type": "Load"
                     },
                     "id": "sink",
-                    "lineno": 7
+                    "lineno": 6
                 },
                 "keywords": [],
-                "lineno": 7
+                "lineno": 6
             }
         }
     ]

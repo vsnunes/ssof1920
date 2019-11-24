@@ -138,3 +138,15 @@ class Debugger(Visitor):
             element.accept(self)
         self.outerScope()
         self.outerScope()
+
+    def visit_compare(self, compare):
+        self.display("*Compare")
+        self.innerScope()
+        self.display("Left")
+        self.innerScope()
+        compare.left.accept(self)
+        self.outerScope()
+        self.display("Comparators")
+        self.innerScope()
+        compare.comparators.accept(self)
+        self.outerScope()

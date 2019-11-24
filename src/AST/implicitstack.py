@@ -16,3 +16,9 @@ class ImplicitStack():
         for obj in self.stack:
             sources += obj.sources
         return list(set(sources))
+
+    def getSanitizers(self):
+        sanitizers = []
+        for obj in self.stack:
+            sanitizers += obj.sanitizers
+        return list(set(sanitizers))
