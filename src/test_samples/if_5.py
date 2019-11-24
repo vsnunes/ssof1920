@@ -1,6 +1,7 @@
 a = source()
 b = 1
-if a:
+x = 2
+if x:
     a = 2
     if b:
         a = source3()

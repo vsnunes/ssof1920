@@ -1,4 +1,5 @@
 a = source()
-if a:
+c = 3
+if c:
     b = 2
 sink(b)

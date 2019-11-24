@@ -143,6 +143,7 @@ def main(argv, arg):
             if results[filename] != "":
                 print("{}\n{}".format(filename, results[filename]))
         except Exception:
+            print("FAILED: No output or config file provided for test ", filename)
             generic['comp'] += 1
 
     print("============== Summary ==============")

@@ -49,18 +49,17 @@
                 }
             ],
             "value": {
-                "ast_type": "Num",
+                "ast_type": "Name",
                 "col_offset": 4,
-                "lineno": 2,
-                "n": {
-                    "ast_type": "int",
-                    "n": 2,
-                    "n_str": "2"
-                }
+                "ctx": {
+                    "ast_type": "Load"
+                },
+                "id": "x",
+                "lineno": 2
             }
         },
         {
-            "ast_type": "If",
+            "ast_type": "While",
             "body": [
                 {
                     "ast_type": "Assign",
@@ -90,7 +89,7 @@
             "orelse": [],
             "test": {
                 "ast_type": "Name",
-                "col_offset": 3,
+                "col_offset": 6,
                 "ctx": {
                     "ast_type": "Load"
                 },

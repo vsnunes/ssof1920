@@ -1,6 +1,6 @@
 a = source()
-b = 2
-if a:
+b = x
+while a:
     b = "ola"
 
 sink(b)

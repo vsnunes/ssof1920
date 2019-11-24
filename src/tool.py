@@ -192,9 +192,9 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
         elif(nodeType == "While"):
 
-            condition = createNodes(parsed_json['test'], symtable, vuln, implicitStack)
 
-            implicitStack.push(condition)
+
+
 
             symtableBody = deepcopy(symtable)
             symtableElse = deepcopy(symtable)
@@ -202,6 +202,10 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
             #Special case when vulnerabilities are only detected with multiple body loop iterations
             lastSymtable = None
             while True:
+                condition = createNodes(parsed_json['test'], symtableBody, vuln, implicitStack)
+
+                implicitStack.push(condition)
+
                 body = Block(symtableBody, createNodes(parsed_json['body'], symtableBody, vuln, implicitStack))
 
                 if lastSymtable is not None:
@@ -211,6 +215,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                         break
                 else:
                     lastSymtable = deepcopy(symtableBody)
+                implicitStack.pop()
 
 
             orelse = Block(symtableElse, createNodes(parsed_json['orelse'], symtableElse, vuln, implicitStack))

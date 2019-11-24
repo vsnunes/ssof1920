@@ -1,6 +1,7 @@
 a = source()
 b = k
-if a:
+x = 5
+if x:
     b = c
 else:
     b = d
