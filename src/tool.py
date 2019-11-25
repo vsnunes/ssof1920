@@ -68,8 +68,8 @@ def main(argv, arg):
         program_block = createNodes(parsed_json, None, vuln, implicitStack)
         #For each vulnerability mark each function as source, sanitizer or sink
         #print tree
-        #debugger = Debugger()
-        #program_block.traverse(debugger)
+        debugger = Debugger()
+        program_block.traverse(debugger)
         #detect explicit -> append to file
         #explicitleaks = MarkExplicitLeaks()
         #program_block.traverse(explicitleaks)
@@ -102,26 +102,29 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
             return Root(Block(symt, instructions))
 
         elif(nodeType == "Assign"):
-            targets = createNodes(parsed_json['targets'][0], symtable, vuln, implicitStack)
-            value = createNodes(parsed_json['value'], symtable, vuln, implicitStack)
-                 
-            # normal variable assign
-            targets.tainted = value.tainted
-            targets.sources = value.sources
-            targets.sanitizers = value.sanitizers
+            leftValues = []
+            for target in parsed_json['targets']:
+                targets = createNodes(target, symtable, vuln, implicitStack)
+                leftValues.append(targets)
+                value = createNodes(parsed_json['value'], symtable, vuln, implicitStack)
+                    
+                # normal variable assign
+                targets.tainted = value.tainted
+                targets.sources = value.sources
+                targets.sanitizers = value.sanitizers
 
-            #adds implicit sources to left variables
-            srcs = implicitStack.getSources()
-            targets.sources += srcs
-            targets.sanitizers += implicitStack.getSanitizers()
+                #adds implicit sources to left variables
+                srcs = implicitStack.getSources()
+                targets.sources += srcs
+                targets.sanitizers += implicitStack.getSanitizers()
 
-            if len(srcs) > 0:
-                targets.tainted = True
+                if len(srcs) > 0:
+                    targets.tainted = True
 
-            # correct left value to remove source tag
-            targets.type = ""
+                # correct left value to remove source tag
+                targets.type = ""
 
-            return Assign(targets, value)
+            return Assign(leftValues, value)
 
         elif(nodeType == "If"):
             condition = createNodes(parsed_json['test'], symtable, vuln, implicitStack)

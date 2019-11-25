@@ -35,8 +35,15 @@ class Debugger(Visitor):
     def visit_assign(self, assign_inst):
         self.display("*Assign")
         self.innerScope()
-        assign_inst.leftValues.accept(self)
+        self.display("LeftValues")
+        self.innerScope()
+        for leftValue in assign_inst.leftValues:
+            leftValue.accept(self)
+        self.outerScope()
+        self.display("RightValue")
+        self.innerScope()
         assign_inst.values.accept(self)
+        self.outerScope()
         self.outerScope()
 
 
@@ -97,7 +104,7 @@ class Debugger(Visitor):
         self.outerScope()
 
     def visit_attribute(self, attribute):
-        self.display("*Attribute Tainted? = " + str(attribute.tainted) + " Id = " + str(attribute.id))
+        self.display("*Attribute Tainted? = " + str(attribute.tainted) + " Id = " + str(attribute.attr))
         self.innerScope()
         attribute.value.accept(self)
         self.outerScope()
@@ -148,5 +155,6 @@ class Debugger(Visitor):
         self.outerScope()
         self.display("Comparators")
         self.innerScope()
-        compare.comparators.accept(self)
+        for comparator in compare.comparators:
+            comparator.accept(self)
         self.outerScope()
