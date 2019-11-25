@@ -1,0 +1,6 @@
+[
+    {"vulnerability": "Command Injection",
+    "sources": ["input"],
+    "sanitizers": ["quote"],
+    "sinks": ["call"]}
+]
