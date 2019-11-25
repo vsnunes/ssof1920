@@ -263,11 +263,28 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
             
             elif fcall.type == "sink" and fcall.tainted:
                 listIDs = []
+                listIDSsVerbose = []
                 listSanIDs = []
+                listSanIDsVerbose = []
+
+                obj_sources = fcall.sources
+                obj_sanitizers = fcall.sanitizers
+
                 for obj in fcall.sources:
                     listIDs.append(obj.getID())
+
+                for obj in list(set(obj_sources)):                    
+                    listIDSsVerbose.append(obj.getID() + " [{}]".format(obj.__class__.__name__))
+
                 for obj in fcall.sanitizers:
                     listSanIDs.append(obj.getID())
+
+                for obj in list(set(obj_sanitizers)):
+                    sanit = obj.getID() + " ("
+                    for source in obj.sources:
+                        sanit += " " + source.getID() + " [" + source.__class__.__name__ + "]"
+                    sanit += " )"
+                    listSanIDsVerbose.append(sanit)
                 
                 container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(listIDs)), 'sanitizer': list(set(listSanIDs))}
             
@@ -276,7 +293,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                 
                 if container not in data:
                     data.append(container)
-                    print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizers: {}\n************************".format(vuln.name, fcall.name, list(set(listIDs)),list(set(listSanIDs))))
+                    print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizers: {}\n************************".format(vuln.name, fcall.name, list(set(listIDSsVerbose)),list(set(listSanIDsVerbose))))
                     
                 with open(vuln.output, 'w') as outfile:
                     json.dump(data, outfile, ensure_ascii=False, indent=4)
