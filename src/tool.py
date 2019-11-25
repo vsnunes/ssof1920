@@ -255,13 +255,16 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                     listIDs.append(obj.getID())
                 for obj in fcall.sanitizers:
                     listSanIDs.append(obj.getID())
-                print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizers: {}\n************************".format(vuln.name, fcall.name, list(set(listIDs)),list(set(listSanIDs))))
+                
                 container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(listIDs)), 'sanitizer': list(set(listSanIDs))}
             
                 with open(vuln.output, "r") as jsonFile:
                     data = json.load(jsonFile)
-                tmp = data
-                data.append(container)
+                
+                if container not in data:
+                    data.append(container)
+                    print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizers: {}\n************************".format(vuln.name, fcall.name, list(set(listIDs)),list(set(listSanIDs))))
+                    
                 with open(vuln.output, 'w') as outfile:
                     json.dump(data, outfile, ensure_ascii=False, indent=4)
 
