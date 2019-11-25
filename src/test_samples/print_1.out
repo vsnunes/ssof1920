@@ -2,9 +2,5 @@
     {"vulnerability":"simple",
     "source":["a", "source"],
     "sanitizer":[],
-    "sink":"sink"},
-    {"vulnerability":"simple",
-    "source":["a", "source"],
-    "sanitizer":[],
     "sink":"sink"}
 ]
