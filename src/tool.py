@@ -68,8 +68,8 @@ def main(argv, arg):
         program_block = createNodes(parsed_json, None, vuln, implicitStack)
         #For each vulnerability mark each function as source, sanitizer or sink
         #print tree
-        debugger = Debugger()
-        program_block.traverse(debugger)
+        #debugger = Debugger()
+        #program_block.traverse(debugger)
         #detect explicit -> append to file
         #explicitleaks = MarkExplicitLeaks()
         #program_block.traverse(explicitleaks)
@@ -102,27 +102,37 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
             return Root(Block(symt, instructions))
 
         elif(nodeType == "Assign"):
-            leftValues = []
-            for target in parsed_json['targets']:
-                targets = createNodes(target, symtable, vuln, implicitStack)
-                leftValues.append(targets)
-                value = createNodes(parsed_json['value'], symtable, vuln, implicitStack)
-                    
+            def perform_assign(targets, value, implicitStack):
                 # normal variable assign
                 targets.tainted = value.tainted
                 targets.sources = value.sources
-                targets.sanitizers = value.sanitizers
+                if value.tainted:
+                    targets.sanitizers = value.sanitizers
 
                 #adds implicit sources to left variables
                 srcs = implicitStack.getSources()
                 targets.sources += srcs
-                targets.sanitizers += implicitStack.getSanitizers()
+                if value.tainted:
+                    targets.sanitizers += implicitStack.getSanitizers()
 
                 if len(srcs) > 0:
                     targets.tainted = True
 
                 # correct left value to remove source tag
                 targets.type = ""
+
+            leftValues = []
+            for target in parsed_json['targets']:
+                targets = createNodes(target, symtable, vuln, implicitStack)
+                leftValues.append(targets)
+                value = createNodes(parsed_json['value'], symtable, vuln, implicitStack)
+                
+                if (targets.__class__.__name__ == "Tuple" and value.__class__.__name__ == "Tuple") or \
+                    (targets.__class__.__name__ == "List" and value.__class__.__name__ == "List"):
+                    for i in range(0, len(targets.elements)):
+                        perform_assign(targets.elements[i], value.elements[i], implicitStack)
+                else:
+                    perform_assign(targets, value, implicitStack)
 
             return Assign(leftValues, value)
 

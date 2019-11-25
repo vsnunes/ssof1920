@@ -1,0 +1,6 @@
+[
+    {"vulnerability":"simple",
+    "source":["source", "y", "ja_foste"],
+    "sanitizer":["sanitizer", "sanitizer2", "sanitizer3"],
+    "sink":"sink"}
+]

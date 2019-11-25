@@ -6,7 +6,7 @@ class Attribute(Instruction):
         self.attr = attr
         self.value = value
         self.tainted = self.value.tainted or self.attr.tainted
-        self.sanitizers = self.value.sanitizers
+        self.sanitizers = self.value.sanitizers + self.attr.sanitizers
 
         #self.value.sources += self.attr.sources
         #self.value.tainted = self.attr.tainted

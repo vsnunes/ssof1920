@@ -23,6 +23,7 @@ class FunctionCall(Instruction):
         if self.value is not None:
             self.tainted = self.tainted or self.value.tainted
             self.sources += self.value.sources
+            self.sanitizers += self.value.sanitizers
 
     def getID(self):
         return self.name
