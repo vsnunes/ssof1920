@@ -1,6 +1,16 @@
 [
     {"vulnerability":"simple",
-    "source":["source", "y", "ja_foste"],
-    "sanitizer":["sanitizer", "sanitizer2", "sanitizer3"],
+    "source":["ja_foste", "source"],
+    "sanitizer":["sanitizer3"],
+    "sink":"sink"},
+
+    {"vulnerability":"simple",
+    "source":["y"],
+    "sanitizer":["sanitizer2"],
+    "sink":"sink"},
+
+    {"vulnerability":"simple",
+    "source":["ja_foste", "source"],
+    "sanitizer":["sanitizer"],
     "sink":"sink"}
 ]

@@ -286,19 +286,19 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
 
                 sanitizersDict = {}
+                alreadySanitized = []
                 noSanitizer = []
-                print(fcall.args)
-                for obj in fcall.args:
-                    listIDs.append(obj.getID())
-                    print(obj.getID(), obj.sanitizers)
-                    if len(obj.sanitizers) > 0:
-                        for sanit in obj.sanitizers:
-                            if sanit not in sanitizersDict:
-                                sanitizersDict[sanit] = obj.sources
-                            else:
-                                sanitizersDict[sanit].append(obj)
-                    else:
+                for obj in fcall.sanitizers:
+                    if obj not in sanitizersDict:
+                        sanitizersDict[obj] = []
+                    for source in obj.sources:
+                        sanitizersDict[obj].append(source)
+                        alreadySanitized.append(source)
+
+                for obj in fcall.sources:
+                    if obj not in alreadySanitized:
                         noSanitizer.append(obj)
+
 
                 with open(vuln.output, "r") as jsonFile:
                     data = json.load(jsonFile)
@@ -308,7 +308,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                     for source in sanitizersDict[key]:
                         ids.append(source.getID())
                         
-                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': ids, 'sanitizer': key.getID()}
+                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(ids)), 'sanitizer': [key.getID()]}
                     
                     if container not in data:
                         data.append(container)
@@ -316,14 +316,13 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                         
                     with open(vuln.output, 'w') as outfile:
                         json.dump(data, outfile, ensure_ascii=False, indent=4)
-                
-                for var in noSanitizer:
-                    print('cocwcnwvociwenbvbwneovubw')
-                    ids = []
-                    for source in noSanitizer:
-                        ids.append(source.getID())
-                        
-                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': ids, 'sanitizer': []}
+
+                ids = []
+                for source in noSanitizer:
+                    ids.append(source.getID())
+
+                if len(noSanitizer) > 0:
+                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(ids)), 'sanitizer': []}
 
                     if container not in data:
                         data.append(container)
