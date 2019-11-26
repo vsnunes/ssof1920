@@ -103,6 +103,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
         elif(nodeType == "Assign"):
             def perform_assign(targets, value, implicitStack):
+                srcs = deepcopy(implicitStack.getSources())
                 # normal variable assign
                 targets.tainted = value.tainted
                 targets.sources = value.sources
@@ -110,7 +111,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                     targets.sanitizers = value.sanitizers
 
                 #adds implicit sources to left variables
-                srcs = implicitStack.getSources()
+                #srcs = implicitStack.getSources()
                 targets.sources += srcs
                 if value.tainted:
                     targets.sanitizers += implicitStack.getSanitizers()
