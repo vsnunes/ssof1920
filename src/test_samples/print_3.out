@@ -1,21 +1,21 @@
 [
     {"vulnerability":"simple",
-    "source":["source"],
-    "sanitizer":[],
+    "source":"source",
+    "sanitizer":"",
     "sink":"sink"},
 
     {"vulnerability":"simple",
     "source":["source2", "source3"],
-    "sanitizer":[],
+    "sanitizer":"",
     "sink":"sink"},
 
     {"vulnerability":"simple",
     "source":["source", "source3", "source4"],
-    "sanitizer":[],
+    "sanitizer":"",
     "sink":"sink"},
 
     {"vulnerability":"simple",
     "source":["source", "source2", "source3", "source4"],
-    "sanitizer":[],
+    "sanitizer":"",
     "sink":"sink"}
 ]

@@ -1,6 +1,6 @@
 [
     {"vulnerability":"slice11",
     "source":["b", "indarg"],
-    "sanitizer":[],
+    "sanitizer":"",
     "sink":"z"}
 ]
