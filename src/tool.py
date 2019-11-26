@@ -270,10 +270,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
                 obj_sources = fcall.sources
                 obj_sanitizers = fcall.sanitizers
-
-                for obj in fcall.sources:
-                    listIDs.append(obj.getID())
-
+                
                 for obj in list(set(obj_sources)):                    
                     listIDSsVerbose.append(obj.getID() + " [{}]".format(obj.__class__.__name__))
 
@@ -286,18 +283,54 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                         sanit += " " + source.getID() + " [" + source.__class__.__name__ + "]"
                     sanit += " )"
                     listSanIDsVerbose.append(sanit)
-                
-                container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(listIDs)), 'sanitizer': list(set(listSanIDs))}
-            
+
+
+                sanitizersDict = {}
+                noSanitizer = []
+                print(fcall.args)
+                for obj in fcall.args:
+                    listIDs.append(obj.getID())
+                    print(obj.getID(), obj.sanitizers)
+                    if len(obj.sanitizers) > 0:
+                        for sanit in obj.sanitizers:
+                            if sanit not in sanitizersDict:
+                                sanitizersDict[sanit] = obj.sources
+                            else:
+                                sanitizersDict[sanit].append(obj)
+                    else:
+                        noSanitizer.append(obj)
+
                 with open(vuln.output, "r") as jsonFile:
                     data = json.load(jsonFile)
-                
-                if container not in data:
-                    data.append(container)
-                    print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizers: {}\n************************".format(vuln.name, fcall.name, list(set(listIDSsVerbose)),list(set(listSanIDsVerbose))))
+
+                for key in sanitizersDict:
+                    ids = []
+                    for source in sanitizersDict[key]:
+                        ids.append(source.getID())
+                        
+                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': ids, 'sanitizer': key.getID()}
                     
-                with open(vuln.output, 'w') as outfile:
-                    json.dump(data, outfile, ensure_ascii=False, indent=4)
+                    if container not in data:
+                        data.append(container)
+                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, key.getID()))
+                        
+                    with open(vuln.output, 'w') as outfile:
+                        json.dump(data, outfile, ensure_ascii=False, indent=4)
+                
+                for var in noSanitizer:
+                    print('cocwcnwvociwenbvbwneovubw')
+                    ids = []
+                    for source in noSanitizer:
+                        ids.append(source.getID())
+                        
+                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': ids, 'sanitizer': []}
+
+                    if container not in data:
+                        data.append(container)
+                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, []))
+
+                    with open(vuln.output, 'w') as outfile:
+                        json.dump(data, outfile, ensure_ascii=False, indent=4)
 
             elif fcall.type == "sanitizer":
                 fcall.sanitizers.append(fcall)
