@@ -307,12 +307,17 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                     ids = []
                     for source in sanitizersDict[key]:
                         ids.append(source.getID())
-                        
-                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(ids)), 'sanitizer': [key.getID()]}
+
+                    list_ids = list(set(ids))
+                    if len(list_ids) > 1:
+                        container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list_ids, 'sanitizer': key.getID()}
+                    else:
+                        container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list_ids[0],
+                                     'sanitizer': key.getID()}
                     
                     if container not in data:
                         data.append(container)
-                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, key.getID()))
+                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, list_ids, key.getID()))
                         
                     with open(vuln.output, 'w') as outfile:
                         json.dump(data, outfile, ensure_ascii=False, indent=4)
@@ -322,11 +327,17 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                     ids.append(source.getID())
 
                 if len(noSanitizer) > 0:
-                    container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list(set(ids)), 'sanitizer': []}
+
+                    list_ids = list(set(ids))
+                    if len(list_ids) > 1:
+                        container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list_ids, 'sanitizer': ""}
+                    else:
+                        container = {'vulnerability': vuln.name, 'sink': fcall.name, 'source': list_ids[0],
+                                     'sanitizer': ""}
 
                     if container not in data:
                         data.append(container)
-                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, []))
+                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, list_ids, []))
 
                     with open(vuln.output, 'w') as outfile:
                         json.dump(data, outfile, ensure_ascii=False, indent=4)

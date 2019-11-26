@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import glob, os, json, sys
 from collections import Counter
+import subprocess
+from threading import Timer
 
 TEST_SAMPLE_FOLDER = "test_samples"
 
@@ -69,7 +71,28 @@ def main(argv, arg):
 
         os.system("astexport -p <" + file + " > " + file_json)
 
-        os.system("../tool " + file_json + " " + config +  " > /dev/null")
+        kill = lambda process: process.kill()
+        FNULL = open(os.devnull, 'w')
+        cmd = ['../tool', file_json, config]
+        tool = subprocess.Popen(
+            cmd, stdout=FNULL, stderr=subprocess.PIPE)
+
+        my_timer = Timer(5, kill, [tool])
+
+        try:
+            my_timer.start()
+            stdout, stderr = tool.communicate()
+        finally:
+            my_timer.cancel()
+
+        try:
+            subprocess.run(cmd, timeout=5)
+        except subprocess.TimeoutExpired:
+            print("FAILED: Time limit exceed for test ", filename)
+            generic['comp'] += 1
+            continue
+
+        #os.system("../tool " + file_json + " " + config +  " > /dev/null")
 
         try:
             if not os.path.isfile(output):

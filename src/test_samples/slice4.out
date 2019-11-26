@@ -1,10 +1,10 @@
 [
     {"vulnerability":"slice4",
     "source":["b", "koneksi"],
-    "sanitizer":[],
+    "sanitizer":"",
     "sink":"y"},
     {"vulnerability":"slice4",
-    "source":["koneksi"],
-    "sanitizer":[],
+    "source":"koneksi",
+    "sanitizer":"",
     "sink":"s"}
 ]
