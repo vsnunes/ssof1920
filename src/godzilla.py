@@ -10,6 +10,8 @@ results = {}
 
 filename = ""
 
+
+
 def main(argv, arg):
     def display(filename, type, msg):
         if (type == "s" and displaySuccess) or (type == "f" and displayFail) or (type == "w" and displayWrong):
@@ -41,7 +43,7 @@ def main(argv, arg):
     file_list = glob.glob("*.py")
 
     number_of_tests = len(file_list)
-    generic = {"output": 0, "vuln": 0, "comp": 0}
+    generic = {"output": 0, "vuln": 0, "comp": 0, "time": 0}
     success = {"sources" : 0, "sanitizers": 0, "sinks": 0}
     failed  = {"sources" : 0, "sanitizers": 0, "sinks": 0}
     wrong   = {"sources" : 0, "sanitizers": 0, "sinks": 0}
@@ -49,6 +51,7 @@ def main(argv, arg):
 
     tests_with_fails = set()
     tests_with_wrong = set()
+    tests_with_time_exceeded = set()
 
     print("Found {} test(s)!".format(number_of_tests))
 
@@ -89,7 +92,8 @@ def main(argv, arg):
             subprocess.run(cmd, timeout=5)
         except subprocess.TimeoutExpired:
             print("FAILED: Time limit exceed for test ", filename)
-            generic['comp'] += 1
+            generic['time'] += 1
+            tests_with_time_exceeded.add(file)
             continue
 
         #os.system("../tool " + file_json + " " + config +  " > /dev/null")
@@ -140,20 +144,22 @@ def main(argv, arg):
                                 tests_with_wrong.add(file)
                         except Exception:
                             failed['sanitizers'] += 1
-                        
+
                         try:
                             if json_output[i]['sink'] == json_expected[i]['sink']:
                                 display(filename, "s", "SUCCESS: {}-Sinks OK!".format(i))
                                 success['sinks'] += 1
                                 sinks_ok = True
                             else:
-                                display(filename, "w", "WRONG:\n\tExpected {}-Sinks: {} but got {}".format(i, json_expected[i]['sink'], json_output[i]['sink']))
+                                display(filename, "w",
+                                        "WRONG:\n\tExpected {}-Sinks: {} but got {}".format(i, json_expected[i]['sink'], json_output[i]['sink']))
                                 wrong['sinks'] += 1
                                 sinks_ok = False
                                 tests_with_wrong.add(file)
-                            
+
                         except Exception:
                             failed['sinks'] += 1
+
                     if len(json_expected) == 0:
                         sources_ok = True
                         sanitizers_ok = True
@@ -177,6 +183,8 @@ def main(argv, arg):
         print("No output was provided: {}".format(generic['output']))
     if generic['vuln'] > 0:
         print("Different len(vulnerabilities) were given: {}".format(generic['vuln']))
+    if generic['time'] > 0:
+        print("Time limit exceeded in {} test(s)!".format(generic['time']))
     print("Passed with distintion: {}".format(passed))
     print("Type     (Sources/Sanitizers/Sinks)")
     print("Success: ({:03}/{:03}/{:03})".format(success['sources'], success['sanitizers'], success['sinks']))
@@ -187,6 +195,8 @@ def main(argv, arg):
         print("Tests with fails: {}".format(tests_with_fails))
     if len(tests_with_wrong) > 0:
         print("Tests with wrong answers: {}".format(tests_with_wrong))
+    if len(tests_with_time_exceeded) > 0:
+        print("Tests with time limit exceeded: {}".format(tests_with_time_exceeded))
     print(" ")
     total = success['sources'] + wrong['sources'] + failed['sources']
     print("Sources    score:\t({:03}/{:03})\t{:>7.2%}".format(success['sources'], total, (success['sources'] / total)))

@@ -48,7 +48,7 @@ def main(argv, arg):
 
     parsed_vulnerabilities = json.loads(json_vulnPatterns)
 
-    output_name = ntpath.basename(argv[1]).split('.json')[0] + ".output.json"
+    output_name = os.path.splitext(argv[1])[0] + ".output.json"
 
     data = []
     with open(output_name, 'w') as outfile:
