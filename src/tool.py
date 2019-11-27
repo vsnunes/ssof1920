@@ -19,7 +19,6 @@ from AST.list import List
 from AST.implicitstack import ImplicitStack
 
 from AST.visitors.debugger import Debugger
-from AST.visitors.explicitleaks import MarkExplicitLeaks
 
 from copy import deepcopy
 
@@ -67,17 +66,8 @@ def main(argv, arg):
         implicitStack = ImplicitStack()
         program_block = createNodes(parsed_json, None, vuln, implicitStack)
         #For each vulnerability mark each function as source, sanitizer or sink
-        #print tree
         #debugger = Debugger()
         #program_block.traverse(debugger)
-        #detect explicit -> append to file
-        #explicitleaks = MarkExplicitLeaks()
-        #program_block.traverse(explicitleaks)
-        #debugger = Debugger()
-        #program_block.traverse(debugger)
-        #detect implicit -> append to file
-    
-
                 
 def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
     #case where you have a list of instructions
