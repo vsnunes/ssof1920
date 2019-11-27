@@ -1,6 +1,0 @@
-[
-    {"vulnerability":"proj_samples",
-    "sources":["a", "c","d"],
-    "sanitizers":[],
-    "sinks":["t", "z"]}
-]

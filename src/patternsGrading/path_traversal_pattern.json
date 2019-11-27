@@ -1,6 +1,0 @@
-[
-    {"vulnerability": "Path Traversal",
-    "sources": ["get"],
-    "sanitizers": ["secure_filename"],
-    "sinks": ["remove"]}
-]

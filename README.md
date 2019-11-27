@@ -1,10 +1,14 @@
 # Discovering vulnerabilities in Python web applications
-Software Security project
+Software Security project 2019/2020
 
-## Useful Links
-[Project Description](https://fenix.tecnico.ulisboa.pt/disciplinas/SSof7/2019-2020/1-semestre/project)
+[83531 - Miguel Belém](mailto:miguelbelem@tecnico.ulisboa.pt)
+
+[87701 - Ricardo Ferreira](mailto:ricardo.m.s.ferreira@tecnico.ulisboa.pt)
+
+[83576 - Vítor Nunes](mailto:vitor.sobrinho.nunes@tecnico.ulisboa.pt)
 
 ## How to run the tool
+Our tool was build in **Python3**, ensure that you have python3 installed.
 The tool receives the code slice and the vulnerability pattern file both in JSON format.
 
 To run the tool simply invoke the following commands:
@@ -16,6 +20,16 @@ cd src/
 **Note:** If you get a "permission denied" during the execution of the previous command you will have to add exec permissions:
 ```
 chmod +x tool
+```
+
+## How to test the tool
+We develop an automated tester, called godzilla that tests our tool.
+Godzilla will use test slices under the `test_samples` folder and will
+compare the output with the expected one.
+To run godzilla ensure that you have `astexport` available in `PATH` and run the following command:
+```
+cd src/
+python3 godzilla.py
 ```
 
 ## Problem

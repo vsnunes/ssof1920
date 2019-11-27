@@ -297,7 +297,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
                     
                     if container not in data:
                         data.append(container)
-                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, key.getID()))
+                        #print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, key.getID()))
                         
                     with open(vuln.output, 'w') as outfile:
                         json.dump(data, outfile, ensure_ascii=False, indent=4)
@@ -316,7 +316,7 @@ def createNodes(parsed_json, symtable=None, vuln=None, implicitStack=None):
 
                     if container not in data:
                         data.append(container)
-                        print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, []))
+                        #print("************************\n"+"Vulnerability: {}\nSink: {}\nSources: {}\nSanitizer: {}\n************************".format(vuln.name, fcall.name, ids, []))
 
                     with open(vuln.output, 'w') as outfile:
                         json.dump(data, outfile, ensure_ascii=False, indent=4)
