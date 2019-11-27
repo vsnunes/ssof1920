@@ -60,8 +60,13 @@ class SymTable:
             if other_variable is not None:
                 if variable.tainted == True:
                     if other_variable.tainted == True:
-                        variable.sources = list(set(other_variable.sources + variable.sources))
-                        variable.sanitizers = list(set(other_variable.sanitizers + variable.sanitizers))
+                        for var in other_variable.sources:
+                            if var not in variable.sources:
+                                variable.sources.append(var)
+
+                        for san in other_variable.sanitizers:
+                            if san not in variable.sanitizers:
+                                variable.sanitizers.append(san)
                     result.append(variable)
                 else:
                     result.append(other_variable)
@@ -84,8 +89,13 @@ class SymTable:
             if other_variable is not None:
                 if variable.tainted == True:
                     if other_variable.tainted == True:
-                        variable.sources = list(set(other_variable.sources + variable.sources))
-                        variable.sanitizers = list(set(other_variable.sanitizers + variable.sanitizers))
+                        for var in other_variable.sources:
+                            if var not in variable.sources:
+                                variable.sources.append(var)
+
+                        for san in other_variable.sanitizers:
+                            if san not in variable.sanitizers:
+                                variable.sanitizers.append(san)
                     result.append(variable)
                     inBothList.append(variable)
                 else:
