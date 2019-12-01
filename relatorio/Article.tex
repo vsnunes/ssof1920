@@ -6,13 +6,13 @@
 
 \begin{document}
 
-\title{Henriques Lab bioRxiv template}
+\title{Discovering vulnerabilities in Python web applications}
 \shorttitle{My Template}
 
 % Use letters for affiliations, numbers to show equal authorship (if applicable) and to indicate the corresponding author
-\author[1,\Letter]{Ricardo Henriques}
-
-\affil[1]{Quantitative Imaging and Nanobiophysics Group, MRC Laboratory for Molecular Cell Biology and Department of Cell and Developmental Biology, University College London, Gower Street, London, WC1E 6BT, United Kingdom}
+\author[1,\Letter]{83531 - Miguel Belém}
+\author[2,\Letter]{87701 - Ricardo Ferreira}
+\author[3,\Letter]{83576 - Vítor Nunes}
 
 \maketitle
 
@@ -29,45 +29,41 @@ bla | bla | bla | bla
 \end{keywords}
 
 \begin{corrauthor}
-%\texttt{r.henriques{@}ucl.ac.uk}
-r.henriques\at ucl.ac.uk
+
 \end{corrauthor}
 
-\section*{Introduction}
-\Blindtext
+\section*{Implementation}
+Our tool was develop in Python 3.
 
-\section*{Results}
+We used a AST object tree structure as an internal representation for the input program. Therefore
+each instruction is converted to an object. We have objects for all major instructions like \textsc{If},
+\textsc{Assignment}, \textsc{While}, \textsc{Variable}, \textsc{Compare}, etc... each one containing
+only interesting values gathered from the AST json tree.
+In the end the idea is to construct one single object, called \textsc{Root} which contains a block of instructions.
+Intuitively, each instruction could contain others. An \textsc{If} contains a condition, a body of instructions
+in case of conditions evaluates to True, and a else body of instructions, otherwise. A slice is then represented
+as a matryoska of objects. We opted for this representation due to its flexibility. This is
+accomplish by a recursive function that constructs the objects. It could be possible to use an iterative
+function instead, however we would loose flexibility and we would increase code complexity.
 
-Just for kicks here's a citation \cite{Gustafsson2016}. And a reference to a supplement \cref{note:Note1}. And \nameref{note:Note1}.
-\Blindtext
+\subsection*{Explicit Flows}
+%explain how we use a symtable
 
-\begin{figure}%[tbhp]
-\centering
-\includegraphics[width=.8\linewidth]{Figures/Figure_1}
-\caption{Placeholder image of Iris with a long example caption to show justification setting.}
-\label{fig:computerNo}
-\end{figure}
+\subsection*{Implicit Flows}
+%explain what we do to check implicit flows, like propagate the sources of a condition to every assigment
+%in the body
 
-\Blindtext
 
-Figure \ref{fig:computerNo} shows an example of how to insert a column-wide figure. To insert a figure wider than one column, please use the \verb|\begin{figure*}...\end{figure*}| environment. Figures wider than one column should be sized to 11.4 cm or 17.8 cm wide. Use \verb|\begin{SCfigure*}...\end{SCfigure*}| for a wide figure with side captions.
+\section*{Imprecisions and Limitiations}
+
+\section*{Challenges}
+
+\section*{Bonus}
 
 \section*{Conclusions}
 
 blablaba \ref{fig:computerNo} 
 \blindtext
-
-\subsection*{Blabla} 
-\blindtext
-
-\section*{Conclusions}
-
-blablaba \ref{fig:computerNo}
-\blindtext
-
-\begin{acknowledgements}
-\blindtext
-\end{acknowledgements}
 
 \section*{Bibliography}
 \bibliography{zHenriquesLab-Mendeley}
