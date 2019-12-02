@@ -9,3 +9,8 @@ src/*.out.json
 src/test_samples/*.output.json
 src/*.output.json
 .idea/
+relatorio/*.aux
+relatorio/*.fls
+relatorio/*.out
+relatorio/*.log
+relatorio/*.fdb_latexmk
